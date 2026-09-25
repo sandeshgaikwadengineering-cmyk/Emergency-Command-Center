@@ -1,0 +1,1404 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Secure login for the AI Emergency Command Center."
+    >
+
+    <title>Login | AI Emergency Command Center</title>
+
+    <style>
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --danger: #dc2626;
+            --danger-dark: #b91c1c;
+            --success: #16a34a;
+
+            --dark: #0f172a;
+            --text: #172033;
+            --muted: #64748b;
+
+            --background: #f1f5f9;
+            --white: #ffffff;
+            --border: #dbe3ec;
+
+            --shadow:
+                0 25px 70px rgba(15, 23, 42, 0.12);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(37, 99, 235, 0.12),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(220, 38, 38, 0.08),
+                    transparent 28%
+                ),
+                var(--background);
+
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           PAGE LAYOUT
+        ===================================================== */
+
+        .page {
+            min-height: 100vh;
+
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+        }
+
+        /* =====================================================
+           LEFT PANEL
+        ===================================================== */
+
+        .left-panel {
+            min-height: 100vh;
+
+            padding: 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0f172a,
+                    #172554
+                );
+
+            color: white;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: "";
+
+            position: absolute;
+
+            width: 500px;
+            height: 500px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(37, 99, 235, 0.16);
+
+            top: -220px;
+            right: -220px;
+        }
+
+        .left-panel::after {
+            content: "";
+
+            position: absolute;
+
+            width: 400px;
+            height: 400px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(220, 38, 38, 0.08);
+
+            bottom: -220px;
+            left: -200px;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+
+            max-width: 580px;
+            margin: auto;
+        }
+
+        /* =====================================================
+           BRAND
+        ===================================================== */
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            position: relative;
+            z-index: 5;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            background: var(--danger);
+            color: white;
+
+            font-size: 22px;
+            font-weight: 800;
+
+            box-shadow:
+                0 10px 25px rgba(220, 38, 38, 0.25);
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .brand-text span {
+            display: block;
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* =====================================================
+           HERO CONTENT
+        ===================================================== */
+
+        .left-hero {
+            margin-top: 90px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 7px 11px;
+
+            border: 1px solid rgba(255,255,255,.12);
+
+            background: rgba(255,255,255,.05);
+
+            border-radius: 20px;
+
+            color: #bfdbfe;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 0 5px rgba(34,197,94,.12);
+        }
+
+        .left-hero h1 {
+            margin-top: 22px;
+
+            font-size: clamp(35px, 4vw, 54px);
+
+            line-height: 1.08;
+
+            letter-spacing: -2px;
+        }
+
+        .left-hero h1 span {
+            color: #60a5fa;
+        }
+
+        .left-hero > p {
+            margin-top: 18px;
+
+            color: #94a3b8;
+
+            font-size: 14px;
+            line-height: 1.8;
+
+            max-width: 520px;
+        }
+
+        /* =====================================================
+           SYSTEM STATUS CARDS
+        ===================================================== */
+
+        .system-status {
+            margin-top: 35px;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 10px;
+        }
+
+        .status-card {
+            padding: 13px;
+
+            background: rgba(255,255,255,.05);
+
+            border: 1px solid rgba(255,255,255,.08);
+
+            border-radius: 10px;
+        }
+
+        .status-card small {
+            display: block;
+
+            color: #64748b;
+
+            font-size: 8px;
+            text-transform: uppercase;
+        }
+
+        .status-card strong {
+            display: block;
+
+            margin-top: 4px;
+
+            color: white;
+
+            font-size: 11px;
+        }
+
+        .online {
+            color: #4ade80 !important;
+        }
+
+        /* =====================================================
+           SECURITY INFO
+        ===================================================== */
+
+        .security-info {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            color: #64748b;
+
+            font-size: 10px;
+        }
+
+        .security-icon {
+            width: 25px;
+            height: 25px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 7px;
+
+            background: rgba(255,255,255,.06);
+
+            color: #93c5fd;
+        }
+
+        /* =====================================================
+           RIGHT PANEL
+        ===================================================== */
+
+        .right-panel {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 35px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .mobile-brand {
+            display: none;
+        }
+
+        /* =====================================================
+           LOGIN CARD
+        ===================================================== */
+
+        .login-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            padding: 36px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .login-header {
+            margin-bottom: 28px;
+        }
+
+        .login-header h2 {
+            color: var(--dark);
+
+            font-size: 26px;
+
+            letter-spacing: -0.7px;
+        }
+
+        .login-header p {
+            margin-top: 7px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 7px;
+        }
+
+        .form-label-row label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .forgot-link {
+            color: var(--primary);
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+
+            left: 13px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #94a3b8;
+
+            font-size: 14px;
+
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+
+            height: 46px;
+
+            padding: 0 42px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+
+            outline: none;
+
+            color: var(--text);
+
+            background: white;
+
+            font-size: 12px;
+
+            transition:
+                border-color .2s,
+                box-shadow .2s;
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px rgba(37,99,235,.09);
+        }
+
+        .password-toggle {
+            position: absolute;
+
+            right: 12px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           OPTIONS
+        ===================================================== */
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin: 4px 0 20px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+        .remember input {
+            accent-color: var(--primary);
+        }
+
+        /* =====================================================
+           BUTTON
+        ===================================================== */
+
+        .login-button {
+            width: 100%;
+
+            height: 47px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: var(--primary);
+
+            color: white;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            transition:
+                background .2s,
+                transform .2s,
+                box-shadow .2s;
+        }
+
+        .login-button:hover {
+            background: var(--primary-dark);
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 25px rgba(37,99,235,.22);
+        }
+
+        .login-button.loading {
+            pointer-events: none;
+            opacity: .8;
+        }
+
+        /* =====================================================
+           DIVIDER
+        ===================================================== */
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin: 24px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+
+            height: 1px;
+
+            flex: 1;
+
+            background: var(--border);
+        }
+
+        .divider span {
+            color: #94a3b8;
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+        }
+
+        /* =====================================================
+           DEMO ACCESS
+        ===================================================== */
+
+        .demo-access {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 9px;
+        }
+
+        .demo-button {
+            border: 1px solid var(--border);
+
+            background: #f8fafc;
+
+            border-radius: 9px;
+
+            padding: 10px;
+
+            color: #475569;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            transition: .2s;
+        }
+
+        .demo-button:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: var(--primary);
+        }
+
+        /* =====================================================
+           LOGIN FOOTER
+        ===================================================== */
+
+        .login-footer {
+            margin-top: 23px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .back-home {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #64748b;
+
+            font-size: 10px;
+        }
+
+        .back-home:hover {
+            color: var(--primary);
+        }
+
+        /* =====================================================
+           ERROR MESSAGE
+        ===================================================== */
+
+        .error-message {
+            display: none;
+
+            padding: 10px 12px;
+
+            margin-bottom: 17px;
+
+            border-radius: 8px;
+
+            background: #fef2f2;
+
+            border: 1px solid #fecaca;
+
+            color: #b91c1c;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* =====================================================
+           SUCCESS MESSAGE
+        ===================================================== */
+
+        .success-message {
+            display: none;
+
+            padding: 10px 12px;
+
+            margin-bottom: 17px;
+
+            border-radius: 8px;
+
+            background: #f0fdf4;
+
+            border: 1px solid #bbf7d0;
+
+            color: #166534;
+
+            font-size: 10px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .page {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel {
+                display: none;
+            }
+
+            .right-panel {
+                min-height: 100vh;
+            }
+
+            .mobile-brand {
+                display: flex;
+
+                align-items: center;
+                justify-content: center;
+
+                margin-bottom: 25px;
+            }
+        }
+
+        @media (max-width: 520px) {
+
+            .right-panel {
+                padding: 18px;
+            }
+
+            .login-card {
+                padding: 25px 20px;
+                border-radius: 15px;
+            }
+
+            .login-header h2 {
+                font-size: 23px;
+            }
+
+            .demo-access {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- =====================================================
+         LEFT INFORMATION PANEL
+    ===================================================== -->
+
+    <section class="left-panel">
+
+        <div>
+
+            <!-- BRAND -->
+
+            <a href="index.html" class="brand">
+
+                <div class="brand-icon">
+                    +
+                </div>
+
+                <div class="brand-text">
+
+                    <strong>
+                        AI Emergency Command
+                    </strong>
+
+                    <span>
+                        Emergency Response Platform
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <!-- HERO -->
+
+            <div class="left-content">
+
+                <div class="left-hero">
+
+                    <div class="status">
+
+                        <span class="status-dot"></span>
+
+                        Command Center Operational
+
+                    </div>
+
+
+                    <h1>
+                        Welcome to the
+                        <span>Emergency Command Center.</span>
+                    </h1>
+
+
+                    <p>
+                        Securely access your emergency operations
+                        environment to monitor incidents, coordinate
+                        response teams, review AI-generated intelligence,
+                        and manage emergency operations.
+                    </p>
+
+
+                    <!-- SYSTEM STATUS -->
+
+                    <div class="system-status">
+
+                        <div class="status-card">
+
+                            <small>
+                                Incident Monitoring
+                            </small>
+
+                            <strong class="online">
+                                ● Operational
+                            </strong>
+
+                        </div>
+
+
+                        <div class="status-card">
+
+                            <small>
+                                AI Intelligence
+                            </small>
+
+                            <strong class="online">
+                                ● Operational
+                            </strong>
+
+                        </div>
+
+
+                        <div class="status-card">
+
+                            <small>
+                                Location Services
+                            </small>
+
+                            <strong class="online">
+                                ● Operational
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SECURITY -->
+
+        <div class="security-info">
+
+            <div class="security-icon">
+                🔒
+            </div>
+
+            <span>
+                Secure emergency operations environment
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RIGHT LOGIN PANEL
+    ===================================================== -->
+
+    <section class="right-panel">
+
+        <div class="login-container">
+
+
+            <!-- MOBILE BRAND -->
+
+            <div class="mobile-brand">
+
+                <a href="index.html" class="brand">
+
+                    <div class="brand-icon">
+                        +
+                    </div>
+
+                    <div class="brand-text">
+
+                        <strong>
+                            AI Emergency Command
+                        </strong>
+
+                        <span>
+                            Emergency Response Platform
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- LOGIN CARD -->
+
+            <div class="login-card">
+
+                <div class="login-header">
+
+                    <h2>
+                        Sign in to Command Center
+                    </h2>
+
+                    <p>
+                        Enter your authorized operator credentials
+                        to continue.
+                    </p>
+
+                </div>
+
+
+                <!-- ERROR -->
+
+                <div
+                    id="errorMessage"
+                    class="error-message">
+                    Invalid credentials. Please check your email
+                    and password and try again.
+                </div>
+
+
+                <!-- SUCCESS -->
+
+                <div
+                    id="successMessage"
+                    class="success-message">
+                    Login successful. Redirecting to the command center...
+                </div>
+
+
+                <!-- LOGIN FORM -->
+
+                <form id="loginForm">
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <div class="form-label-row">
+
+                            <label for="email">
+                                Email Address
+                            </label>
+
+                        </div>
+
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                @
+                            </span>
+
+                            <input
+                                id="email"
+                                class="form-control"
+                                type="email"
+                                placeholder="operator@example.com"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <div class="form-label-row">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+                            <a
+                                href="#"
+                                class="forgot-link"
+                                onclick="forgotPassword(event)">
+                                Forgot password?
+                            </a>
+
+                        </div>
+
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                ●
+                            </span>
+
+                            <input
+                                id="password"
+                                class="form-control"
+                                type="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword()"
+                                id="passwordToggle">
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- OPTIONS -->
+
+                    <div class="form-options">
+
+                        <label class="remember">
+
+                            <input
+                                type="checkbox"
+                                id="rememberMe">
+
+                            Remember this device
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- LOGIN -->
+
+                    <button
+                        type="submit"
+                        class="login-button"
+                        id="loginButton">
+
+                        Sign In to Command Center →
+
+                    </button>
+
+                </form>
+
+
+                <!-- DEMO ACCESS -->
+
+                <div class="divider">
+                    <span>Demo Access</span>
+                </div>
+
+
+                <div class="demo-access">
+
+                    <button
+                        class="demo-button"
+                        onclick="fillDemo('admin')">
+                        Administrator
+                    </button>
+
+                    <button
+                        class="demo-button"
+                        onclick="fillDemo('dispatcher')">
+                        Dispatcher
+                    </button>
+
+                </div>
+
+
+                <!-- FOOTER -->
+
+                <div class="login-footer">
+
+                    Need access?
+
+                    <a
+                        href="mailto:admin@example.com">
+                        Contact your administrator
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="index.html"
+                class="back-home">
+                ← Return to Home
+            </a>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       PASSWORD VISIBILITY
+    ========================================================= */
+
+    function togglePassword() {
+
+        const password =
+            document.getElementById("password");
+
+        const toggle =
+            document.getElementById("passwordToggle");
+
+
+        if (password.type === "password") {
+
+            password.type = "text";
+            toggle.textContent = "Hide";
+
+        } else {
+
+            password.type = "password";
+            toggle.textContent = "Show";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       DEMO CREDENTIALS
+    ========================================================= */
+
+    function fillDemo(role) {
+
+        const email =
+            document.getElementById("email");
+
+        const password =
+            document.getElementById("password");
+
+
+        if (role === "admin") {
+
+            email.value = "admin@emergency.local";
+            password.value = "admin123";
+
+        }
+
+        if (role === "dispatcher") {
+
+            email.value = "dispatcher@emergency.local";
+            password.value = "dispatch123";
+
+        }
+
+
+        hideMessages();
+
+    }
+
+
+    /* =========================================================
+       LOGIN
+    ========================================================= */
+
+    document
+        .getElementById("loginForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value.trim();
+
+
+            const loginButton =
+                document.getElementById("loginButton");
+
+
+            const errorMessage =
+                document.getElementById("errorMessage");
+
+            const successMessage =
+                document.getElementById("successMessage");
+
+
+            hideMessages();
+
+
+            /*
+             * Demo authentication.
+             *
+             * Replace this section with your backend/API
+             * authentication later.
+             */
+
+            const validCredentials = [
+
+                {
+                    email: "admin@emergency.local",
+                    password: "admin123"
+                },
+
+                {
+                    email: "dispatcher@emergency.local",
+                    password: "dispatch123"
+                }
+
+            ];
+
+
+            const valid =
+                validCredentials.some(user =>
+                    user.email === email &&
+                    user.password === password
+                );
+
+
+            if (!valid) {
+
+                errorMessage.classList.add("show");
+
+                return;
+
+            }
+
+
+            /* Loading state */
+
+            loginButton.classList.add("loading");
+
+            loginButton.textContent =
+                "Authenticating...";
+
+
+            setTimeout(() => {
+
+                successMessage.classList.add("show");
+
+                loginButton.textContent =
+                    "Access Granted ✓";
+
+
+                /*
+                 * Store a simple demo session.
+                 */
+
+                localStorage.setItem(
+                    "emergencyCommandLoggedIn",
+                    "true"
+                );
+
+                localStorage.setItem(
+                    "emergencyCommandUser",
+                    email
+                );
+
+
+                /*
+                 * Redirect to dashboard.
+                 */
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                }, 700);
+
+
+            }, 900);
+
+        });
+
+
+    /* =========================================================
+       FORGOT PASSWORD
+    ========================================================= */
+
+    function forgotPassword(event) {
+
+        event.preventDefault();
+
+        alert(
+            "Password recovery is handled by your system administrator."
+        );
+
+    }
+
+
+    /* =========================================================
+       MESSAGE MANAGEMENT
+    ========================================================= */
+
+    function hideMessages() {
+
+        document
+            .getElementById("errorMessage")
+            .classList.remove("show");
+
+        document
+            .getElementById("successMessage")
+            .classList.remove("show");
+
+    }
+
+
+    /* =========================================================
+       ENTER KEY SUPPORT
+    ========================================================= */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                document.activeElement.tagName !== "BUTTON"
+            ) {
+
+                const form =
+                    document.getElementById("loginForm");
+
+                if (document.activeElement.form === form) {
+
+                    form.requestSubmit();
+
+                }
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
+```
