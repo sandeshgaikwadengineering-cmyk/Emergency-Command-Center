@@ -1,0 +1,1704 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="AI Emergency Command Center — intelligent emergency reporting, incident monitoring, AI-powered classification, and coordinated response."
+    >
+
+    <title>AI Emergency Command Center</title>
+
+    <style>
+        /* =====================================================
+           RESET & GLOBAL
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --danger: #dc2626;
+            --danger-dark: #b91c1c;
+            --success: #16a34a;
+            --warning: #f59e0b;
+
+            --dark: #0f172a;
+            --dark-2: #111827;
+            --text: #172033;
+            --muted: #64748b;
+
+            --background: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+
+            --shadow: 0 20px 50px rgba(15, 23, 42, 0.10);
+            --radius: 16px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font: inherit;
+            cursor: pointer;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        .container {
+            width: min(1180px, calc(100% - 40px));
+            margin: auto;
+        }
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            height: 76px;
+
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(16px);
+
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+
+            z-index: 1000;
+        }
+
+        .navbar {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            background: var(--danger);
+            color: white;
+
+            border-radius: 11px;
+
+            font-size: 21px;
+            font-weight: 800;
+
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 15px;
+            color: var(--dark);
+        }
+
+        .brand-text span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mobile-menu {
+            display: none;
+
+            border: none;
+            background: transparent;
+
+            font-size: 25px;
+            color: var(--dark);
+        }
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .btn {
+            border: none;
+            border-radius: 9px;
+
+            padding: 11px 17px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.25);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-large {
+            padding: 14px 22px;
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+            min-height: 760px;
+
+            padding-top: 150px;
+            padding-bottom: 90px;
+
+            position: relative;
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 80% 15%,
+                    rgba(37, 99, 235, 0.12),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 10% 50%,
+                    rgba(220, 38, 38, 0.07),
+                    transparent 28%
+                ),
+                #f8fafc;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 65px;
+
+            align-items: center;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            background: #ecfdf5;
+            color: #166534;
+
+            border: 1px solid #bbf7d0;
+
+            padding: 7px 11px;
+            border-radius: 30px;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            margin-bottom: 22px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+            background: var(--success);
+
+            animation: pulse 1.7s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 5vw, 67px);
+            line-height: 1.04;
+            letter-spacing: -2.8px;
+            color: var(--dark);
+
+            max-width: 680px;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero-description {
+            margin-top: 22px;
+
+            max-width: 600px;
+
+            color: var(--muted);
+
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+
+            margin-top: 30px;
+        }
+
+        .hero-trust {
+            margin-top: 28px;
+
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .hero-trust span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* =====================================================
+           HERO COMMAND CENTER PREVIEW
+        ===================================================== */
+
+        .command-preview {
+            background: #0f172a;
+
+            border-radius: 20px;
+
+            padding: 15px;
+
+            box-shadow:
+                0 30px 80px rgba(15, 23, 42, 0.22);
+
+            transform: perspective(1200px) rotateY(-3deg);
+        }
+
+        .preview-window {
+            background: #f8fafc;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .preview-topbar {
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 14px;
+
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .preview-dots span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #cbd5e1;
+        }
+
+        .preview-title {
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .preview-live {
+            color: var(--success);
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .preview-content {
+            padding: 14px;
+        }
+
+        .preview-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .preview-stat {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .preview-stat small {
+            display: block;
+            color: var(--muted);
+            font-size: 7px;
+        }
+
+        .preview-stat strong {
+            display: block;
+            margin-top: 3px;
+            font-size: 17px;
+        }
+
+        .preview-main {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .preview-map {
+            height: 235px;
+
+            border-radius: 9px;
+
+            position: relative;
+            overflow: hidden;
+
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    #dce6ef 0,
+                    #dce6ef 2px,
+                    #edf2f7 2px,
+                    #edf2f7 28px
+                );
+        }
+
+        .preview-road {
+            position: absolute;
+            background: white;
+            box-shadow: 0 0 3px #cbd5e1;
+        }
+
+        .road-a {
+            width: 130%;
+            height: 14px;
+            top: 48%;
+            left: -15%;
+            transform: rotate(-13deg);
+        }
+
+        .road-b {
+            width: 110%;
+            height: 12px;
+            top: 65%;
+            left: -5%;
+            transform: rotate(17deg);
+        }
+
+        .preview-marker {
+            position: absolute;
+
+            width: 17px;
+            height: 17px;
+
+            border-radius: 50%;
+
+            background: var(--danger);
+
+            border: 3px solid white;
+
+            box-shadow: 0 3px 9px rgba(0,0,0,.18);
+        }
+
+        .pm-1 {
+            top: 32%;
+            left: 35%;
+        }
+
+        .pm-2 {
+            top: 61%;
+            left: 70%;
+            background: var(--warning);
+        }
+
+        .pm-3 {
+            top: 23%;
+            left: 75%;
+            background: var(--primary);
+        }
+
+        .preview-list {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            overflow: hidden;
+        }
+
+        .preview-list-title {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .preview-incident {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-incident:last-child {
+            border-bottom: none;
+        }
+
+        .preview-incident strong {
+            display: block;
+            font-size: 8px;
+        }
+
+        .preview-incident span {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 7px;
+        }
+
+        .preview-badge {
+            display: inline-block;
+            margin-top: 5px;
+
+            padding: 3px 5px;
+
+            border-radius: 10px;
+
+            background: #fee2e2;
+            color: #b91c1c;
+
+            font-size: 6px;
+            font-weight: 800;
+        }
+
+        /* =====================================================
+           LIVE STATS
+        ===================================================== */
+
+        .stats-section {
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .stat {
+            padding: 28px 25px;
+            text-align: center;
+
+            border-right: 1px solid var(--border);
+        }
+
+        .stat:last-child {
+            border-right: none;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 29px;
+            color: var(--dark);
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
+
+        section {
+            padding: 100px 0;
+        }
+
+        .section-heading {
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto 55px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+
+            color: var(--primary);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+
+            margin-bottom: 12px;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(30px, 4vw, 44px);
+            line-height: 1.15;
+
+            color: var(--dark);
+            letter-spacing: -1.4px;
+        }
+
+        .section-heading p {
+            margin-top: 15px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           FEATURES
+        ===================================================== */
+
+        .features {
+            background: #f8fafc;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .feature-card {
+            background: white;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            padding: 27px;
+
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            width: 45px;
+            height: 45px;
+
+            border-radius: 11px;
+
+            display: grid;
+            place-items: center;
+
+            background: #eff6ff;
+            color: var(--primary);
+
+            font-size: 20px;
+
+            margin-bottom: 18px;
+        }
+
+        .feature-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* =====================================================
+           HOW IT WORKS
+        ===================================================== */
+
+        .workflow {
+            background: white;
+        }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+
+            position: relative;
+        }
+
+        .workflow-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .workflow-number {
+            width: 54px;
+            height: 54px;
+
+            display: grid;
+            place-items: center;
+
+            margin: 0 auto 17px;
+
+            border-radius: 50%;
+
+            background: var(--dark);
+            color: white;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            position: relative;
+            z-index: 2;
+        }
+
+        .workflow-card h3 {
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .workflow-card p {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* =====================================================
+           AI SECTION
+        ===================================================== */
+
+        .ai-section {
+            background: #0f172a;
+            color: white;
+        }
+
+        .ai-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 65px;
+            align-items: center;
+        }
+
+        .ai-section .eyebrow {
+            color: #60a5fa;
+        }
+
+        .ai-section h2 {
+            font-size: clamp(30px, 4vw, 45px);
+            line-height: 1.15;
+            letter-spacing: -1px;
+        }
+
+        .ai-section > .container > .ai-grid > div > p {
+            margin-top: 18px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .ai-points {
+            margin-top: 25px;
+            display: grid;
+            gap: 13px;
+        }
+
+        .ai-point {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .ai-check {
+            width: 21px;
+            height: 21px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: rgba(37,99,235,.2);
+            color: #60a5fa;
+
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .ai-point span {
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+
+        .ai-card {
+            background: #111c30;
+            border: 1px solid #26344b;
+
+            padding: 23px;
+
+            border-radius: 17px;
+        }
+
+        .ai-card-header {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding-bottom: 16px;
+            border-bottom: 1px solid #26344b;
+        }
+
+        .ai-symbol {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 9px;
+
+            display: grid;
+            place-items: center;
+
+            background: var(--primary);
+            color: white;
+        }
+
+        .ai-card-header strong {
+            font-size: 13px;
+        }
+
+        .ai-card-header small {
+            display: block;
+            color: #64748b;
+            font-size: 9px;
+            margin-top: 2px;
+        }
+
+        .ai-result {
+            margin-top: 18px;
+
+            background: #0b1322;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            color: #cbd5e1;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .ai-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+
+            margin-top: 10px;
+        }
+
+        .ai-metric {
+            background: #0b1322;
+            padding: 11px;
+            border-radius: 8px;
+        }
+
+        .ai-metric small {
+            display: block;
+            color: #64748b;
+            font-size: 8px;
+        }
+
+        .ai-metric strong {
+            display: block;
+            color: white;
+            margin-top: 3px;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           MAP SECTION
+        ===================================================== */
+
+        .map-section {
+            background: #f8fafc;
+        }
+
+        .map-demo {
+            height: 400px;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            position: relative;
+
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    #dbe5ee 0,
+                    #dbe5ee 2px,
+                    #eef3f7 2px,
+                    #eef3f7 38px
+                );
+
+            border: 1px solid var(--border);
+        }
+
+        .map-road-large {
+            position: absolute;
+            background: white;
+            box-shadow: 0 0 5px rgba(100,116,139,.2);
+        }
+
+        .map-road-one {
+            width: 120%;
+            height: 25px;
+            top: 40%;
+            left: -10%;
+            transform: rotate(-8deg);
+        }
+
+        .map-road-two {
+            width: 120%;
+            height: 20px;
+            top: 66%;
+            left: -10%;
+            transform: rotate(11deg);
+        }
+
+        .map-road-three {
+            width: 18px;
+            height: 120%;
+            top: -10%;
+            left: 53%;
+            transform: rotate(9deg);
+        }
+
+        .map-pin {
+            position: absolute;
+
+            width: 34px;
+            height: 34px;
+
+            border-radius: 50%;
+
+            display: grid;
+            place-items: center;
+
+            color: white;
+
+            border: 4px solid white;
+
+            box-shadow: 0 5px 15px rgba(0,0,0,.18);
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .pin-red {
+            background: var(--danger);
+            top: 27%;
+            left: 32%;
+        }
+
+        .pin-yellow {
+            background: var(--warning);
+            top: 57%;
+            left: 68%;
+        }
+
+        .pin-blue {
+            background: var(--primary);
+            top: 20%;
+            left: 74%;
+        }
+
+        .map-info {
+            position: absolute;
+
+            background: white;
+
+            padding: 12px 15px;
+
+            border-radius: 10px;
+
+            box-shadow: var(--shadow);
+
+            top: 20px;
+            left: 20px;
+        }
+
+        .map-info strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .map-info span {
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        /* =====================================================
+           CTA
+        ===================================================== */
+
+        .cta {
+            padding: 90px 0;
+            background: white;
+        }
+
+        .cta-box {
+            background:
+                linear-gradient(
+                    120deg,
+                    #172554,
+                    #1d4ed8
+                );
+
+            border-radius: 22px;
+
+            padding: 60px 45px;
+
+            text-align: center;
+
+            color: white;
+
+            box-shadow: 0 25px 60px rgba(29,78,216,.2);
+        }
+
+        .cta-box h2 {
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.15;
+        }
+
+        .cta-box p {
+            max-width: 600px;
+            margin: 15px auto 25px;
+
+            color: #dbeafe;
+            font-size: 13px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .cta .btn-outline {
+            background: transparent;
+            color: white;
+            border-color: rgba(255,255,255,.4);
+        }
+
+        .cta .btn-outline:hover {
+            border-color: white;
+            background: rgba(255,255,255,.08);
+            color: white;
+        }
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+
+            padding: 55px 0 25px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr;
+            gap: 50px;
+        }
+
+        .footer-brand p {
+            margin-top: 15px;
+            font-size: 11px;
+            line-height: 1.8;
+            max-width: 310px;
+        }
+
+        .footer-column h4 {
+            color: white;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .footer-column a {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 11px;
+            transition: color .2s ease;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            margin-top: 45px;
+            padding-top: 20px;
+
+            border-top: 1px solid #1e293b;
+
+            display: flex;
+            justify-content: space-between;
+
+            font-size: 10px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero-grid,
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .command-preview {
+                max-width: 650px;
+                margin: auto;
+                transform: none;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .workflow-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px 20px;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .container {
+                width: min(100% - 28px, 1180px);
+            }
+
+            header {
+                height: 68px;
+            }
+
+            .brand-icon {
+                width: 38px;
+                height: 38px;
+            }
+
+            .brand-text strong {
+                font-size: 13px;
+            }
+
+            .nav-actions .btn-outline {
+                display: none;
+            }
+
+            .hero {
+                padding-top: 120px;
+                min-height: auto;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+                letter-spacing: -1.8px;
+            }
+
+            .hero-description {
+                font-size: 14px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .hero-actions .btn {
+                width: 100%;
+            }
+
+            .preview-main {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-list {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat {
+                border-bottom: 1px solid var(--border);
+            }
+
+            .feature-grid,
+            .workflow-grid,
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 70px 0;
+            }
+
+            .map-demo {
+                height: 300px;
+            }
+
+            .cta-box {
+                padding: 40px 20px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <div class="container navbar">
+
+        <a href="index.html" class="brand">
+
+            <div class="brand-icon">
+                +
+            </div>
+
+            <div class="brand-text">
+                <strong>AI Emergency Command</strong>
+                <span>Emergency Response Platform</span>
+            </div>
+
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="#features">
+                Features
+            </a>
+
+            <a href="#workflow">
+                How It Works
+            </a>
+
+            <a href="#ai">
+                AI Intelligence
+            </a>
+
+            <a href="#map">
+                Live Operations
+            </a>
+
+        </nav>
+
+
+        <div class="nav-actions">
+
+            <a href="login.html"
+               class="btn btn-outline">
+                Command Center Login
+            </a>
+
+            <a href="report-emergency.html"
+               class="btn btn-danger">
+                Report Emergency
+            </a>
+
+            <button
+                class="mobile-menu"
+                onclick="toggleMobileMenu()"
+                aria-label="Open menu">
+                ☰
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<main>
+
+<section class="hero">
+
+    <div class="container hero-grid">
+
+        <div>
+
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                Command Center Systems Operational
+            </div>
+
+
+            <h1>
+                Intelligent
+                <span>Emergency Response</span>
+                Starts Here.
+            </h1>
+
+
+            <p class="hero-description">
+                AI Emergency Command Center brings emergency reporting,
+                real-time incident monitoring, location intelligence,
+                priority classification, and AI-powered decision support
+                into one unified command platform.
+            </p>
+
+
+            <div class="hero-actions">
+
+                <a href="report-emergency.html"
+                   class="btn btn-danger btn-large">
+                    🚨 Report Emergency
+                </a>
+
+                <a href="login.html"
+                   class="btn btn-primary btn-large">
+                    Access Command Center →
+                </a>
+
+            </div>
+
+
+            <div class="hero-trust">
+
+                <span>
+                    ✓ Real-time monitoring
+                </span>
+
+                <span>
+                    ✓ AI-assisted decisions
+                </span>
+
+                <span>
+                    ✓ Role-based access
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- COMMAND CENTER PREVIEW -->
+
+        <div class="command-preview">
+
+            <div class="preview-window">
+
+                <div class="preview-topbar">
+
+                    <div class="preview-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="preview-title">
+                        AI EMERGENCY COMMAND CENTER
+                    </div>
+
+                    <div class="preview-live">
+                        ● LIVE
+                    </div>
+
+                </div>
+
+
+                <div class="preview-content">
+
+                    <div class="preview-stats">
+
+                        <div class="preview-stat">
+                            <small>ACTIVE INCIDENTS</small>
+                            <strong>24</strong>
+                        </div>
+
+                        <div class="preview-stat">
+                            <small>CRITICAL</small>
+                            <strong>06</strong>
+                        </div>
+
+                        <div class="preview-stat">
+                            <small>UNITS ACTIVE</small>
+                            <strong>41</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="preview-main">
+
+                        <div class="preview-map">
+
+                            <div class="preview-road road-a"></div>
+                            <div class="preview-road road-b"></div>
+
+                            <div class="preview-marker pm-1"></div>
+                            <div class="preview-marker pm-2"></div>
+                            <div class="preview-marker pm-3"></div>
+
+                        </div>
+
+
+                        <div class="preview-list">
+
+                            <div class="preview-list-title">
+                                LIVE INCIDENTS
+                            </div>
+
+                            <div class="preview-incident">
+
+                                <strong>
+                                    Building Fire
+                                </strong>
+
+                                <span>
+                                    Central District
+                                </span>
+
+                                <span class="preview-badge">
+                                    CRITICAL
+                                </span>
+
+                            </div>
+
+
+                            <div class="preview-incident">
+
+                                <strong>
+                                    Traffic Collision
+                                </strong>
+
+                                <span>
+                                    Highway 12
+                                </span>
+
+                                <span class="preview-badge">
+                                    HIGH
+                                </span>
+
+                            </div>
+
+
+                            <div class="preview-incident">
+
+                                <strong>
+                                    Medical Emergency
+                                </strong>
+
+                                <span>
+                                    North Avenue
+                                </span>
+
+                                <span class="preview-badge">
+                                    MEDIUM
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     LIVE STATISTICS
+========================================================= -->
+
+<section class="stats-section">
+
+    <div class="container stats-grid">
+
+        <div class="stat">
+            <strong data-count="24">24</strong>
+            <span>Active Incidents</span>
+        </div>
+
+        <div class="stat">
+            <strong data-count="41">41</strong>
+            <span>Units Deployed</span>
+        </div>
+
+        <div class="stat">
+            <strong data-count="58">58</strong>
+            <span>Incidents Resolved Today</span>
+        </div>
+
+        <div class="stat">
+            <strong>99.9%</strong>
+            <span>Platform Availability</span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FEATURES
+========================================================= -->
+
+<section class="features" id="features">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span class="eyebrow">
+                Platform Capabilities
+            </span>
+
+            <h2>
+                One Command Center for Every Emergency
+            </h2>
+
+            <p>
+                Designed to help emergency teams capture,
+                understand, coordinate, and respond to incidents
+                faster and with greater operational visibility.
+            </p>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    ◉
+                </div>
+
+                <h3>
+                    Live Incident Dashboard
+                </h3>
+
+                <p>
+                    Monitor active incidents, critical events,
+                    deployed units, response activity, and
+                    operational status from one real-time dashboard.
+                </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    ⌖
+                </div>
+
+                <h3>
+                    Location Intelligence
+                </h3>
+
+                <p>
+                    Visualize incidents and response resources
+                    using location-aware mapping and geographic
+                    incident information.
+                </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    ✦
+                </div>
+
+                <h3>
+                    AI Incident Analysis
+                </h3>
+
+                <p>
+                    Generate structured incident summaries,
+                    identify key risks, and support emergency
+                    operators with AI-assisted information.
+                </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    ⚠
+                </div>
+
+                <h3>
+                    Priority Classification
+                </h3>
+
+                <p>
+                    Classify incidents according to operational
+                    priority so teams can quickly identify
+                    situations requiring immediate attention.
+                </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    ♙
+```
