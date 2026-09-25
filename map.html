@@ -1,0 +1,2075 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Live Map | AI Emergency Command Center</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0f172a;
+            --navy-2: #172033;
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --red: #dc2626;
+            --orange: #ea580c;
+            --yellow: #ca8a04;
+            --green: #16a34a;
+            --white: #ffffff;
+            --bg: #f1f5f9;
+            --border: #dbe3ec;
+            --text: #172033;
+            --muted: #64748b;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =====================================================
+           APP SHELL
+        ===================================================== */
+
+        .app {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 245px 1fr;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            background: var(--navy);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #1e293b;
+            z-index: 20;
+        }
+
+        .brand {
+            height: 74px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+
+        .brand-icon {
+            width: 37px;
+            height: 37px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            background: var(--red);
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .brand-text span {
+            display: block;
+            margin-top: 3px;
+            color: #94a3b8;
+            font-size: 8px;
+        }
+
+        .nav {
+            padding: 20px 12px;
+            flex: 1;
+        }
+
+        .nav-label {
+            color: #475569;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 10px 9px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            width: 100%;
+            padding: 11px 10px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 10px;
+            transition: .2s;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,.05);
+            color: white;
+        }
+
+        .nav-item.active {
+            color: white;
+            background: rgba(37,99,235,.2);
+        }
+
+        .nav-icon {
+            width: 18px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            min-width: 20px;
+            padding: 3px 5px;
+            text-align: center;
+            border-radius: 20px;
+            background: var(--red);
+            color: white;
+            font-size: 8px;
+            font-weight: 800;
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        .operator {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .avatar {
+            width: 31px;
+            height: 31px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #1d4ed8;
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .operator-info strong {
+            display: block;
+            color: white;
+            font-size: 9px;
+        }
+
+        .operator-info span {
+            color: #64748b;
+            font-size: 8px;
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .topbar {
+            height: 74px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+            z-index: 15;
+        }
+
+        .page-title h1 {
+            font-size: 18px;
+            color: var(--navy);
+            letter-spacing: -.5px;
+        }
+
+        .page-title p {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .system-live {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border: 1px solid #bbf7d0;
+            background: #f0fdf4;
+            border-radius: 7px;
+            color: #166534;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34,197,94,.1);
+        }
+
+        .top-button {
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 7px;
+            color: #475569;
+        }
+
+        /* =====================================================
+           MAP AREA
+        ===================================================== */
+
+        .map-wrapper {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(148,163,184,.12) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    rgba(148,163,184,.12) 1px,
+                    transparent 1px
+                ),
+                #e7eef4;
+            background-size: 45px 45px;
+        }
+
+        /*
+         * Decorative map layer.
+         * Replace this with Google Maps, Mapbox, Leaflet,
+         * or another mapping provider in production.
+         */
+
+        .map-river {
+            position: absolute;
+            width: 240px;
+            height: 110%;
+            left: 52%;
+            top: -5%;
+            transform: rotate(12deg);
+            background: rgba(96,165,250,.23);
+            border-radius: 48%;
+            filter: blur(1px);
+        }
+
+        .road {
+            position: absolute;
+            height: 8px;
+            background: rgba(255,255,255,.9);
+            box-shadow: 0 0 0 1px rgba(148,163,184,.15);
+        }
+
+        .road-1 {
+            width: 110%;
+            top: 28%;
+            left: -5%;
+            transform: rotate(-7deg);
+        }
+
+        .road-2 {
+            width: 100%;
+            top: 59%;
+            left: 0;
+            transform: rotate(12deg);
+        }
+
+        .road-3 {
+            width: 80%;
+            top: 44%;
+            left: 10%;
+            transform: rotate(76deg);
+        }
+
+        .road-4 {
+            width: 70%;
+            top: 72%;
+            left: 18%;
+            transform: rotate(-48deg);
+        }
+
+        .district {
+            position: absolute;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 700;
+            opacity: .6;
+        }
+
+        .district-1 {
+            left: 15%;
+            top: 17%;
+        }
+
+        .district-2 {
+            left: 65%;
+            top: 18%;
+        }
+
+        .district-3 {
+            left: 18%;
+            top: 68%;
+        }
+
+        .district-4 {
+            left: 69%;
+            top: 72%;
+        }
+
+        /* =====================================================
+           INCIDENT MARKERS
+        ===================================================== */
+
+        .marker {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: grid;
+            place-items: center;
+            border: 3px solid white;
+            box-shadow: 0 5px 14px rgba(15,23,42,.22);
+            cursor: pointer;
+            z-index: 5;
+            transition: transform .2s;
+        }
+
+        .marker:hover {
+            transform: rotate(-45deg) scale(1.15);
+            z-index: 10;
+        }
+
+        .marker span {
+            transform: rotate(45deg);
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .marker.critical {
+            background: var(--red);
+        }
+
+        .marker.high {
+            background: var(--orange);
+        }
+
+        .marker.medium {
+            background: var(--yellow);
+        }
+
+        .marker.low {
+            background: var(--green);
+        }
+
+        .marker-1 {
+            left: 36%;
+            top: 32%;
+        }
+
+        .marker-2 {
+            left: 62%;
+            top: 27%;
+        }
+
+        .marker-3 {
+            left: 72%;
+            top: 52%;
+        }
+
+        .marker-4 {
+            left: 43%;
+            top: 68%;
+        }
+
+        .marker-5 {
+            left: 20%;
+            top: 58%;
+        }
+
+        .marker-6 {
+            left: 78%;
+            top: 76%;
+        }
+
+        .marker.pulse::after {
+            content: "";
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border: 2px solid var(--red);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite;
+            opacity: .55;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(.5);
+                opacity: .7;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* =====================================================
+           MAP SEARCH
+        ===================================================== */
+
+        .map-search {
+            position: absolute;
+            left: 18px;
+            top: 18px;
+            width: 320px;
+            z-index: 10;
+        }
+
+        .search-box {
+            height: 42px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            box-shadow: 0 7px 20px rgba(15,23,42,.1);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 9px;
+        }
+
+        .search-box span {
+            color: #94a3b8;
+        }
+
+        .search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-size: 10px;
+        }
+
+        .search-box input::placeholder {
+            color: #94a3b8;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .filter-button {
+            border: 1px solid var(--border);
+            background: white;
+            color: #475569;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 8px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(15,23,42,.06);
+        }
+
+        .filter-button.active {
+            color: white;
+            background: var(--navy);
+            border-color: var(--navy);
+        }
+
+        /* =====================================================
+           MAP CONTROLS
+        ===================================================== */
+
+        .map-controls {
+            position: absolute;
+            right: 18px;
+            top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 10;
+        }
+
+        .map-control {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            color: #475569;
+            font-size: 15px;
+            box-shadow: 0 5px 15px rgba(15,23,42,.08);
+        }
+
+        /* =====================================================
+           LEGEND
+        ===================================================== */
+
+        .legend {
+            position: absolute;
+            left: 18px;
+            bottom: 18px;
+            padding: 12px;
+            background: rgba(255,255,255,.96);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            box-shadow: 0 6px 18px rgba(15,23,42,.08);
+            z-index: 10;
+        }
+
+        .legend-title {
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 8px;
+            color: #475569;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.red {
+            background: var(--red);
+        }
+
+        .legend-dot.orange {
+            background: var(--orange);
+        }
+
+        .legend-dot.yellow {
+            background: var(--yellow);
+        }
+
+        .legend-dot.green {
+            background: var(--green);
+        }
+
+        /* =====================================================
+           INCIDENT PANEL
+        ===================================================== */
+
+        .incident-panel {
+            position: absolute;
+            right: 18px;
+            bottom: 18px;
+            width: 310px;
+            max-height: 410px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 12px 35px rgba(15,23,42,.14);
+            z-index: 12;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h2 {
+            font-size: 11px;
+            color: var(--navy);
+        }
+
+        .panel-header span {
+            color: var(--muted);
+            font-size: 8px;
+        }
+
+        .incident-list {
+            max-height: 345px;
+            overflow-y: auto;
+        }
+
+        .incident {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eef2f7;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .incident:hover {
+            background: #f8fafc;
+        }
+
+        .incident:last-child {
+            border-bottom: none;
+        }
+
+        .incident-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .incident-title {
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .priority {
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 7px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .priority.critical {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .priority.high {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .priority.medium {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .priority.low {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .incident-location {
+            margin-top: 5px;
+            color: #64748b;
+            font-size: 8px;
+        }
+
+        .incident-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 7px;
+            color: #94a3b8;
+            font-size: 7px;
+        }
+
+        /* =====================================================
+           DETAIL MODAL
+        ===================================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 30px 80px rgba(15,23,42,.25);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 14px;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+        }
+
+        .modal-body {
+            padding: 18px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .detail-card {
+            padding: 11px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .detail-card small {
+            display: block;
+            color: #94a3b8;
+            font-size: 7px;
+            text-transform: uppercase;
+        }
+
+        .detail-card strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 10px;
+            color: var(--navy);
+        }
+
+        .ai-summary {
+            margin-top: 12px;
+            padding: 12px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+        }
+
+        .ai-summary strong {
+            display: block;
+            font-size: 9px;
+            color: var(--blue);
+        }
+
+        .ai-summary p {
+            margin-top: 5px;
+            color: #475569;
+            font-size: 9px;
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 1050px) {
+
+            .app {
+                grid-template-columns: 72px 1fr;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 0;
+            }
+
+            .brand-text,
+            .nav-label,
+            .nav-item span:not(.nav-icon),
+            .operator-info {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            .sidebar-footer {
+                display: flex;
+                justify-content: center;
+            }
+
+            .incident-panel {
+                width: 275px;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            body {
+                overflow: auto;
+            }
+
+            .app {
+                min-height: 100vh;
+                height: auto;
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                min-height: 100vh;
+            }
+
+            .topbar {
+                height: 65px;
+                padding: 0 13px;
+            }
+
+            .page-title h1 {
+                font-size: 15px;
+            }
+
+            .system-live {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: grid;
+                place-items: center;
+                width: 32px;
+                height: 32px;
+                margin-right: 8px;
+                border: 1px solid var(--border);
+                background: white;
+                border-radius: 7px;
+            }
+
+            .topbar-left {
+                display: flex;
+                align-items: center;
+            }
+
+            .map-wrapper {
+                min-height: calc(100vh - 65px);
+            }
+
+            .map-search {
+                width: calc(100% - 36px);
+            }
+
+            .incident-panel {
+                left: 18px;
+                right: 18px;
+                bottom: 18px;
+                width: auto;
+                max-height: 260px;
+            }
+
+            .incident-list {
+                max-height: 200px;
+            }
+
+            .legend {
+                display: none;
+            }
+
+            .map-controls {
+                top: 75px;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            .filter-row {
+                overflow-x: auto;
+                padding-bottom: 3px;
+            }
+
+            .filter-button {
+                white-space: nowrap;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+    ===================================================== -->
+
+    <aside class="sidebar">
+
+        <a href="index.html" class="brand">
+
+            <div class="brand-icon">+</div>
+
+            <div class="brand-text">
+                <strong>AI Emergency Command</strong>
+                <span>Emergency Response Platform</span>
+            </div>
+
+        </a>
+
+
+        <nav class="nav">
+
+            <div class="nav-label">
+                Operations
+            </div>
+
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon">▦</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="map.html" class="nav-item active">
+                <span class="nav-icon">⌖</span>
+                <span>Live Map</span>
+                <span class="nav-badge">6</span>
+            </a>
+
+            <a href="incidents.html" class="nav-item">
+                <span class="nav-icon">!</span>
+                <span>Incidents</span>
+                <span class="nav-badge">12</span>
+            </a>
+
+            <a href="report.html" class="nav-item">
+                <span class="nav-icon">+</span>
+                <span>Report Emergency</span>
+            </a>
+
+            <br>
+
+            <div class="nav-label">
+                Management
+            </div>
+
+            <a href="teams.html" class="nav-item">
+                <span class="nav-icon">♙</span>
+                <span>Response Teams</span>
+            </a>
+
+            <a href="analytics.html" class="nav-item">
+                <span class="nav-icon">▥</span>
+                <span>Analytics</span>
+            </a>
+
+            <a href="admin.html" class="nav-item">
+                <span class="nav-icon">⚙</span>
+                <span>Administration</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="operator">
+
+                <div class="avatar">
+                    OP
+                </div>
+
+                <div class="operator-info">
+                    <strong>Operations User</strong>
+                    <span>Dispatcher</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="mobile-menu"
+                    onclick="toggleMobileMenu()">
+                    ☰
+                </button>
+
+                <div class="page-title">
+
+                    <h1>
+                        Live Incident Map
+                    </h1>
+
+                    <p>
+                        Real-time emergency locations and response activity
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="top-actions">
+
+                <div class="system-live">
+
+                    <span class="live-dot"></span>
+
+                    LIVE SYSTEM
+
+                </div>
+
+                <button
+                    class="top-button"
+                    title="Notifications">
+                    ♢
+                </button>
+
+                <button
+                    class="top-button"
+                    title="Settings">
+                    ⚙
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             MAP
+        ================================================= -->
+
+        <section class="map-wrapper" id="map">
+
+
+            <!-- Decorative map background -->
+
+            <div class="map-river"></div>
+
+            <div class="road road-1"></div>
+            <div class="road road-2"></div>
+            <div class="road road-3"></div>
+            <div class="road road-4"></div>
+
+            <div class="district district-1">
+                NORTH DISTRICT
+            </div>
+
+            <div class="district district-2">
+                EAST DISTRICT
+            </div>
+
+            <div class="district district-3">
+                WEST DISTRICT
+            </div>
+
+            <div class="district district-4">
+                SOUTH DISTRICT
+            </div>
+
+
+            <!-- INCIDENT MARKERS -->
+
+            <button
+                class="marker critical marker-1 pulse"
+                onclick="openIncident('INC-1042')"
+                title="INC-1042 — Building Fire">
+
+                <span>!</span>
+
+            </button>
+
+
+            <button
+                class="marker high marker-2"
+                onclick="openIncident('INC-1041')"
+                title="INC-1041 — Traffic Collision">
+
+                <span>!</span>
+
+            </button>
+
+
+            <button
+                class="marker medium marker-3"
+                onclick="openIncident('INC-1040')"
+                title="INC-1040 — Medical Emergency">
+
+                <span>+</span>
+
+            </button>
+
+
+            <button
+                class="marker critical marker-4 pulse"
+                onclick="openIncident('INC-1039')"
+                title="INC-1039 — Structural Damage">
+
+                <span>!</span>
+
+            </button>
+
+
+            <button
+                class="marker high marker-5"
+                onclick="openIncident('INC-1038')"
+                title="INC-1038 — Road Accident">
+
+                <span>!</span>
+
+            </button>
+
+
+            <button
+                class="marker low marker-6"
+                onclick="openIncident('INC-1037')"
+                title="INC-1037 — Minor Medical">
+
+                <span>+</span>
+
+            </button>
+
+
+            <!-- =================================================
+                 SEARCH / FILTER
+            ================================================= -->
+
+            <div class="map-search">
+
+                <div class="search-box">
+
+                    <span>⌕</span>
+
+                    <input
+                        type="text"
+                        id="mapSearch"
+                        placeholder="Search incidents, locations, IDs..."
+                        oninput="searchIncidents()">
+
+                </div>
+
+
+                <div class="filter-row">
+
+                    <button
+                        class="filter-button active"
+                        onclick="filterMap('all', this)">
+                        All
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="filterMap('critical', this)">
+                        Critical
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="filterMap('high', this)">
+                        High
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="filterMap('medium', this)">
+                        Medium
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="filterMap('low', this)">
+                        Low
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 MAP CONTROLS
+            ================================================= -->
+
+            <div class="map-controls">
+
+                <button
+                    class="map-control"
+                    onclick="zoomIn()">
+                    +
+                </button>
+
+                <button
+                    class="map-control"
+                    onclick="zoomOut()">
+                    −
+                </button>
+
+                <button
+                    class="map-control"
+                    onclick="locateUser()"
+                    title="My Location">
+                    ⌖
+                </button>
+
+                <button
+                    class="map-control"
+                    onclick="resetMap()"
+                    title="Reset Map">
+                    ↺
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 LEGEND
+            ================================================= -->
+
+            <div class="legend">
+
+                <div class="legend-title">
+                    Incident Priority
+                </div>
+
+                <div class="legend-items">
+
+                    <div class="legend-item">
+                        <span class="legend-dot red"></span>
+                        Critical
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot orange"></span>
+                        High
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot yellow"></span>
+                        Medium
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot green"></span>
+                        Low
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 INCIDENT LIST
+            ================================================= -->
+
+            <aside class="incident-panel">
+
+                <div class="panel-header">
+
+                    <h2>
+                        Active Incidents
+                    </h2>
+
+                    <span>
+                        Updated just now
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="incident-list"
+                    id="incidentList">
+
+
+                    <div
+                        class="incident"
+                        data-priority="critical"
+                        data-search="INC-1042 building fire north district">
+
+                        <div class="incident-top">
+
+                            <span class="incident-title">
+                                INC-1042 · Building Fire
+                            </span>
+
+                            <span class="priority critical">
+                                Critical
+                            </span>
+
+                        </div>
+
+                        <div class="incident-location">
+                            North District · 1.2 km away
+                        </div>
+
+                        <div class="incident-meta">
+                            <span>2 min ago</span>
+                            <span>Fire Unit dispatched</span>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="incident"
+                        data-priority="high"
+                        data-search="INC-1041 traffic collision east district">
+
+                        <div class="incident-top">
+
+                            <span class="incident-title">
+                                INC-1041 · Traffic Collision
+                            </span>
+
+                            <span class="priority high">
+                                High
+                            </span>
+
+                        </div>
+
+                        <div class="incident-location">
+                            East District · 2.8 km away
+                        </div>
+
+                        <div class="incident-meta">
+                            <span>5 min ago</span>
+                            <span>Ambulance en route</span>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="incident"
+                        data-priority="medium"
+                        data-search="INC-1040 medical emergency">
+
+                        <div class="incident-top">
+
+                            <span class="incident-title">
+                                INC-1040 · Medical Emergency
+                            </span>
+
+                            <span class="priority medium">
+                                Medium
+                            </span>
+
+                        </div>
+
+                        <div class="incident-location">
+                            East District · 3.5 km away
+                        </div>
+
+                        <div class="incident-meta">
+                            <span>8 min ago</span>
+                            <span>Medical Unit assigned</span>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="incident"
+                        data-priority="critical"
+                        data-search="INC-1039 structural damage">
+
+                        <div class="incident-top">
+
+                            <span class="incident-title">
+                                INC-1039 · Structural Damage
+                            </span>
+
+                            <span class="priority critical">
+                                Critical
+                            </span>
+
+                        </div>
+
+                        <div class="incident-location">
+                            West District · 4.1 km away
+                        </div>
+
+                        <div class="incident-meta">
+                            <span>11 min ago</span>
+                            <span>Rescue Unit assigned</span>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="incident"
+                        data-priority="high"
+                        data-search="INC-1038 road accident">
+
+                        <div class="incident-top">
+
+                            <span class="incident-title">
+                                INC-1038 · Road Accident
+                            </span>
+
+                            <span class="priority high">
+                                High
+                            </span>
+
+                        </div>
+
+                        <div class="incident-location">
+                            West District · 3.2 km away
+                        </div>
+
+                        <div class="incident-meta">
+                            <span>14 min ago</span>
+                            <span>Police Unit en route</span>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="incident"
+                        data-priority="low"
+                        data-search="INC-1037 minor medical">
+
+                        <div class="incident-top">
+
+                            <span class="incident-title">
+                                INC-1037 · Minor Medical
+                            </span>
+
+                            <span class="priority low">
+                                Low
+                            </span>
+
+                        </div>
+
+                        <div class="incident-location">
+                            South District · 5.7 km away
+                        </div>
+
+                        <div class="incident-meta">
+                            <span>19 min ago</span>
+                            <span>Unit dispatched</span>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     INCIDENT DETAIL MODAL
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="incidentModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                Incident Details
+            </h2>
+
+            <button
+                class="modal-close"
+                onclick="closeIncident()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <div class="detail-grid">
+
+                <div class="detail-card">
+
+                    <small>
+                        Incident ID
+                    </small>
+
+                    <strong id="modalId">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-card">
+
+                    <small>
+                        Priority
+                    </small>
+
+                    <strong id="modalPriority">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-card">
+
+                    <small>
+                        Location
+                    </small>
+
+                    <strong id="modalLocation">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-card">
+
+                    <small>
+                        Response Unit
+                    </small>
+
+                    <strong id="modalUnit">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-summary">
+
+                <strong>
+                    ✦ AI INCIDENT SUMMARY
+                </strong>
+
+                <p id="modalSummary">
+                    Analyzing incident information...
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       INCIDENT DATA
+    ========================================================= */
+
+    const incidents = {
+
+        "INC-1042": {
+            title: "Building Fire",
+            priority: "Critical",
+            location: "North District",
+            unit: "Fire Unit 04",
+            summary:
+                "AI analysis indicates an active building fire with potential structural and public safety risks. Fire response has been dispatched and the incident requires continuous monitoring."
+        },
+
+        "INC-1041": {
+            title: "Traffic Collision",
+            priority: "High",
+            location: "East District",
+            unit: "Ambulance 07",
+            summary:
+                "Multiple vehicles appear to be involved in a road collision. Emergency medical response has been assigned and traffic control may be required."
+        },
+
+        "INC-1040": {
+            title: "Medical Emergency",
+            priority: "Medium",
+            location: "East District",
+            unit: "Medical Unit 12",
+            summary:
+                "Reported medical emergency requiring professional assessment. A medical response unit has been assigned to the location."
+        },
+
+        "INC-1039": {
+            title: "Structural Damage",
+            priority: "Critical",
+            location: "West District",
+            unit: "Rescue Unit 02",
+            summary:
+                "Reported structural damage may create secondary safety risks. Rescue personnel have been assigned and the surrounding area should be monitored."
+        },
+
+        "INC-1038": {
+            title: "Road Accident",
+            priority: "High",
+            location: "West District",
+            unit: "Police Unit 16",
+            summary:
+                "Road accident reported with potential traffic disruption. Police response is being coordinated with emergency medical resources."
+        },
+
+        "INC-1037": {
+            title: "Minor Medical",
+            priority: "Low",
+            location: "South District",
+            unit: "Medical Unit 08",
+            summary:
+                "Low-priority medical incident reported. A nearby response unit has been assigned for assessment and assistance."
+        }
+
+    };
+
+
+    /* =========================================================
+       OPEN INCIDENT
+    ========================================================= */
+
+    function openIncident(id) {
+
+        const incident = incidents[id];
+
+        if (!incident) {
+            return;
+        }
+
+        document.getElementById("modalTitle").textContent =
+            incident.title;
+
+        document.getElementById("modalId").textContent =
+            id;
+
+        document.getElementById("modalPriority").textContent =
+            incident.priority;
+
+        document.getElementById("modalLocation").textContent =
+            incident.location;
+
+        document.getElementById("modalUnit").textContent =
+            incident.unit;
+
+        document.getElementById("modalSummary").textContent =
+            incident.summary;
+
+        document
+            .getElementById("incidentModal")
+            .classList.add("show");
+
+    }
+
+
+    /* =========================================================
+       CLOSE INCIDENT
+    ========================================================= */
+
+    function closeIncident() {
+
+        document
+            .getElementById("incidentModal")
+            .classList.remove("show");
+
+    }
+
+
+    document
+        .getElementById("incidentModal")
+        .addEventListener("click", function(event) {
+
+            if (event.target === this) {
+                closeIncident();
+            }
+
+        });
+
+
+    /* =========================================================
+       FILTER MAP
+    ========================================================= */
+
+    function filterMap(priority, button) {
+
+        document
+            .querySelectorAll(".filter-button")
+            .forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+        button.classList.add("active");
+
+
+        const incidentsList =
+            document.querySelectorAll(".incident");
+
+
+        incidentsList.forEach(incident => {
+
+            if (
+                priority === "all" ||
+                incident.dataset.priority === priority
+            ) {
+
+                incident.style.display = "block";
+
+            } else {
+
+                incident.style.display = "none";
+
+            }
+
+        });
+
+
+        document
+            .querySelectorAll(".marker")
+            .forEach(marker => {
+
+                if (priority === "all") {
+
+                    marker.style.display = "grid";
+
+                    return;
+
+                }
+
+
+                const markerClasses =
+                    marker.className;
+
+
+                marker.style.display =
+                    markerClasses.includes(priority)
+                        ? "grid"
+                        : "none";
+
+            });
+
+    }
+
+
+    /* =========================================================
+       SEARCH INCIDENTS
+    ========================================================= */
+
+    function searchIncidents() {
+
+        const query =
+            document
+                .getElementById("mapSearch")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        document
+            .querySelectorAll(".incident")
+            .forEach(incident => {
+
+                const searchable =
+                    incident.dataset.search || "";
+
+
+                incident.style.display =
+                    searchable.includes(query)
+                        ? "block"
+                        : "none";
+
+            });
+
+    }
+
+
+    /* =========================================================
+       MAP ZOOM
+    ========================================================= */
+
+    let mapScale = 1;
+
+
+    function zoomIn() {
+
+        mapScale =
+            Math.min(mapScale + 0.1, 1.6);
+
+        applyZoom();
+
+    }
+
+
+    function zoomOut() {
+
+        mapScale =
+            Math.max(mapScale - 0.1, 0.7);
+
+        applyZoom();
+
+    }
+
+
+    function applyZoom() {
+
+        document
+            .querySelector(".map-wrapper")
+            .style.backgroundSize =
+                `${45 / mapScale}px ${45 / mapScale}px`;
+
+        document
+            .querySelectorAll(".road, .map-river, .district, .marker")
+            .forEach(element => {
+
+                element.style.transform +=
+                    "";
+
+            });
+
+    }
+
+
+    /* =========================================================
+       LOCATION
+    ========================================================= */
+
+    function locateUser() {
+
+        if (!navigator.geolocation) {
+
+            alert(
+                "Location services are not supported by this browser."
+            );
+
+            return;
+
+        }
+
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position) {
+
+                alert(
+                    "Current location detected.\n\n" +
+                    "Latitude: " +
+                    position.coords.latitude.toFixed(5) +
+                    "\nLongitude: " +
+                    position.coords.longitude.toFixed(5)
+                );
+
+            },
+
+            function() {
+
+                alert(
+                    "Unable to access your current location. " +
+                    "Please allow location permissions."
+                );
+
+            }
+
+        );
+
+    }
+
+
+    /* =========================================================
+       RESET MAP
+    ========================================================= */
+
+    function resetMap() {
+
+        mapScale = 1;
+
+        document
+            .querySelector(".map-wrapper")
+            .style.backgroundSize =
+                "45px 45px";
+
+        document
+            .getElementById("mapSearch")
+            .value = "";
+
+        document
+            .querySelectorAll(".incident")
+            .forEach(item => {
+                item.style.display = "block";
+            });
+
+        document
+            .querySelectorAll(".marker")
+            .forEach(marker => {
+                marker.style.display = "grid";
+            });
+
+        document
+            .querySelectorAll(".filter-button")
+            .forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+        document
+            .querySelector(".filter-button")
+            .classList.add("active");
+
+    }
+
+
+    /* =========================================================
+       MOBILE MENU
+    ========================================================= */
+
+    function toggleMobileMenu() {
+
+        alert(
+            "Mobile navigation can be connected to your " +
+            "full command-center navigation drawer."
+        );
+
+    }
+
+
+    /* =========================================================
+       SIMULATED LIVE UPDATE
+    ========================================================= */
+
+    setInterval(() => {
+
+        const liveText =
+            document.querySelector(".system-live");
+
+        if (!liveText) {
+            return;
+        }
+
+        liveText.style.opacity = "0.55";
+
+        setTimeout(() => {
+            liveText.style.opacity = "1";
+        }, 250);
+
+    }, 5000);
+
+
+    /* =========================================================
+       ESCAPE TO CLOSE MODAL
+    ========================================================= */
+
+    document.addEventListener("keydown", function(event) {
+
+        if (event.key === "Escape") {
+            closeIncident();
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
+```
