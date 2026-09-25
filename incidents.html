@@ -1,0 +1,4552 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="AI Emergency Command Center incident management dashboard."
+    >
+
+    <title>Incidents | AI Emergency Command Center</title>
+
+    <style>
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0f172a;
+            --navy-light: #1e293b;
+
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+
+            --red: #dc2626;
+            --red-bg: #fef2f2;
+
+            --orange: #ea580c;
+            --orange-bg: #fff7ed;
+
+            --yellow: #ca8a04;
+            --yellow-bg: #fefce8;
+
+            --green: #16a34a;
+            --green-bg: #f0fdf4;
+
+            --purple: #7c3aed;
+            --purple-bg: #f5f3ff;
+
+            --white: #ffffff;
+            --background: #f1f5f9;
+
+            --border: #e2e8f0;
+
+            --text: #172033;
+            --muted: #64748b;
+            --muted-light: #94a3b8;
+
+            --sidebar-width: 245px;
+
+            --shadow:
+                0 8px 30px rgba(15, 23, 42, .06);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--background);
+            color: var(--text);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           APP
+        ========================================================= */
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            position: fixed;
+
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            width: var(--sidebar-width);
+
+            background: var(--navy);
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+
+            z-index: 100;
+        }
+
+        .brand {
+            height: 72px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 0 19px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,.08);
+        }
+
+        .brand-icon {
+            width: 37px;
+            height: 37px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 9px;
+
+            background: var(--red);
+
+            color: white;
+
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .brand-text strong {
+            display: block;
+
+            color: white;
+
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #64748b;
+
+            font-size: 8px;
+        }
+
+        .nav {
+            flex: 1;
+
+            padding: 20px 12px;
+
+            overflow-y: auto;
+        }
+
+        .nav-label {
+            padding:
+                0 10px 9px;
+
+            color: #475569;
+
+            font-size: 8px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            width: 100%;
+
+            padding: 11px 10px;
+
+            margin-bottom: 4px;
+
+            border-radius: 8px;
+
+            color: #94a3b8;
+
+            font-size: 10px;
+
+            transition: .2s;
+        }
+
+        .nav-item:hover {
+            background:
+                rgba(255,255,255,.05);
+
+            color: white;
+        }
+
+        .nav-item.active {
+            color: white;
+
+            background:
+                rgba(37,99,235,.22);
+        }
+
+        .nav-icon {
+            width: 18px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+
+            min-width: 20px;
+
+            padding: 3px 5px;
+
+            border-radius: 20px;
+
+            background: var(--red);
+
+            color: white;
+
+            font-size: 8px;
+
+            text-align: center;
+
+            font-weight: 800;
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+
+            border-top:
+                1px solid rgba(255,255,255,.08);
+        }
+
+        .operator {
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+        }
+
+        .avatar {
+            width: 31px;
+            height: 31px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: var(--blue);
+
+            color: white;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .operator-info strong {
+            display: block;
+
+            color: white;
+
+            font-size: 9px;
+        }
+
+        .operator-info span {
+            display: block;
+
+            margin-top: 2px;
+
+            color: #64748b;
+
+            font-size: 8px;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main {
+            width: calc(100% - var(--sidebar-width));
+
+            margin-left: var(--sidebar-width);
+
+            min-width: 0;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================= */
+
+        .topbar {
+            height: 72px;
+
+            background: white;
+
+            border-bottom:
+                1px solid var(--border);
+
+            padding:
+                0 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 50;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .mobile-menu {
+            display: none;
+
+            width: 33px;
+            height: 33px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 7px;
+        }
+
+        .page-title h1 {
+            font-size: 18px;
+
+            color: var(--navy);
+
+            letter-spacing: -.4px;
+        }
+
+        .page-title p {
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .live-status {
+            display: flex;
+            align-items: center;
+
+            gap: 6px;
+
+            padding:
+                7px 10px;
+
+            background: var(--green-bg);
+
+            border:
+                1px solid #bbf7d0;
+
+            border-radius: 7px;
+
+            color: #166534;
+
+            font-size: 8px;
+            font-weight: 800;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            animation:
+                livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+
+            0%,100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .35;
+            }
+        }
+
+        .icon-button {
+            width: 33px;
+            height: 33px;
+
+            border:
+                1px solid var(--border);
+
+            background: white;
+
+            border-radius: 7px;
+
+            color: #475569;
+        }
+
+        /* =========================================================
+           PAGE CONTENT
+        ========================================================= */
+
+        .content {
+            padding: 22px 25px 35px;
+        }
+
+        /* =========================================================
+           SUMMARY CARDS
+        ========================================================= */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+            box-shadow: var(--shadow);
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .summary-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 55px;
+            height: 55px;
+
+            right: -20px;
+            bottom: -20px;
+
+            border-radius: 50%;
+
+            background: rgba(37,99,235,.05);
+        }
+
+        .summary-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .summary-label {
+            color: var(--muted);
+
+            font-size: 8px;
+
+            text-transform: uppercase;
+
+            font-weight: 800;
+
+            letter-spacing: .6px;
+        }
+
+        .summary-icon {
+            width: 27px;
+            height: 27px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+        }
+
+        .summary-card.total
+        .summary-icon {
+            background: #eff6ff;
+            color: var(--blue);
+        }
+
+        .summary-card.critical
+        .summary-icon {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .summary-card.active
+        .summary-icon {
+            background: var(--orange-bg);
+            color: var(--orange);
+        }
+
+        .summary-card.resolved
+        .summary-icon {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .summary-value {
+            margin-top: 10px;
+
+            font-size: 24px;
+
+            color: var(--navy);
+
+            font-weight: 800;
+
+            letter-spacing: -.8px;
+        }
+
+        .summary-change {
+            margin-top: 4px;
+
+            font-size: 8px;
+
+            color: var(--muted);
+        }
+
+        .summary-change strong {
+            color: var(--green);
+        }
+
+        /* =========================================================
+           TOOLBAR
+        ========================================================= */
+
+        .toolbar {
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+
+            padding: 13px;
+
+            margin-bottom: 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            box-shadow: var(--shadow);
+
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper {
+            position: relative;
+
+            flex: 1;
+
+            min-width: 220px;
+        }
+
+        .search-icon {
+            position: absolute;
+
+            left: 11px;
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+        .search-input {
+            width: 100%;
+
+            height: 36px;
+
+            padding:
+                0 12px 0 31px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 7px;
+
+            outline: none;
+
+            color: var(--text);
+
+            background: #f8fafc;
+
+            font-size: 9px;
+        }
+
+        .search-input:focus {
+            background: white;
+
+            border-color:
+                #93c5fd;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37,99,235,.08);
+        }
+
+        .filter-select {
+            height: 36px;
+
+            padding:
+                0 27px 0 10px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 7px;
+
+            background: white;
+
+            color: #475569;
+
+            outline: none;
+
+            font-size: 9px;
+        }
+
+        .filter-select:focus {
+            border-color: #93c5fd;
+        }
+
+        .sort-button {
+            height: 36px;
+
+            padding:
+                0 11px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 7px;
+
+            background: white;
+
+            color: #475569;
+
+            font-size: 9px;
+
+            font-weight: 700;
+        }
+
+        .sort-button:hover {
+            background: #f8fafc;
+        }
+
+        .report-button {
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 6px;
+
+            padding:
+                0 12px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: var(--red);
+
+            color: white;
+
+            font-size: 9px;
+
+            font-weight: 800;
+        }
+
+        .report-button:hover {
+            background: #b91c1c;
+        }
+
+        /* =========================================================
+           TABLE CONTAINER
+        ========================================================= */
+
+        .table-container {
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+            box-shadow: var(--shadow);
+        }
+
+        .table-header {
+            padding:
+                15px 16px;
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        .table-header h2 {
+            color: var(--navy);
+
+            font-size: 11px;
+        }
+
+        .table-header p {
+            color: var(--muted);
+
+            font-size: 8px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            min-width: 920px;
+
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8fafc;
+        }
+
+        th {
+            padding:
+                10px 13px;
+
+            color: #64748b;
+
+            font-size: 7px;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+
+            font-weight: 800;
+
+            border-bottom:
+                1px solid var(--border);
+
+            white-space: nowrap;
+        }
+
+        td {
+            padding:
+                12px 13px;
+
+            border-bottom:
+                1px solid #eef2f7;
+
+            font-size: 9px;
+
+            color: #475569;
+
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: .15s;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .incident-id {
+            color: var(--blue);
+
+            font-weight: 800;
+
+            font-size: 8px;
+        }
+
+        .incident-name {
+            color: var(--navy);
+
+            font-weight: 800;
+
+            font-size: 9px;
+        }
+
+        .incident-type {
+            margin-top: 3px;
+
+            color: #94a3b8;
+
+            font-size: 7px;
+        }
+
+        .location-cell {
+            display: flex;
+            align-items: center;
+
+            gap: 6px;
+        }
+
+        .location-icon {
+            color: var(--blue);
+
+            font-size: 11px;
+        }
+
+        .priority {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            padding:
+                4px 7px;
+
+            border-radius: 5px;
+
+            font-size: 7px;
+
+            text-transform: uppercase;
+
+            font-weight: 800;
+        }
+
+        .priority-dot {
+            width: 5px;
+            height: 5px;
+
+            border-radius: 50%;
+        }
+
+        .priority.critical {
+            color: #b91c1c;
+
+            background: var(--red-bg);
+        }
+
+        .priority.critical
+        .priority-dot {
+            background: var(--red);
+        }
+
+        .priority.high {
+            color: #c2410c;
+
+            background: var(--orange-bg);
+        }
+
+        .priority.high
+        .priority-dot {
+            background: var(--orange);
+        }
+
+        .priority.medium {
+            color: #a16207;
+
+            background: var(--yellow-bg);
+        }
+
+        .priority.medium
+        .priority-dot {
+            background: var(--yellow);
+        }
+
+        .priority.low {
+            color: #15803d;
+
+            background: var(--green-bg);
+        }
+
+        .priority.low
+        .priority-dot {
+            background: var(--green);
+        }
+
+        .status {
+            display: inline-flex;
+
+            padding:
+                4px 7px;
+
+            border-radius: 5px;
+
+            font-size: 7px;
+
+            font-weight: 800;
+        }
+
+        .status.active {
+            background: #eff6ff;
+            color: var(--blue);
+        }
+
+        .status.dispatched {
+            background: var(--purple-bg);
+            color: var(--purple);
+        }
+
+        .status.investigating {
+            background: var(--yellow-bg);
+            color: #a16207;
+        }
+
+        .status.resolved {
+            background: var(--green-bg);
+            color: #15803d;
+        }
+
+        .status.pending {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .unit {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .unit-avatar {
+            width: 23px;
+            height: 23px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: #eff6ff;
+
+            color: var(--blue);
+
+            font-size: 7px;
+
+            font-weight: 800;
+        }
+
+        .unit-text strong {
+            display: block;
+
+            color: var(--navy);
+
+            font-size: 8px;
+        }
+
+        .unit-text span {
+            display: block;
+
+            margin-top: 2px;
+
+            color: #94a3b8;
+
+            font-size: 7px;
+        }
+
+        .time-cell {
+            white-space: nowrap;
+
+            color: #64748b;
+
+            font-size: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+
+            gap: 5px;
+        }
+
+        .action-button {
+            width: 27px;
+            height: 27px;
+
+            display: grid;
+            place-items: center;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 6px;
+
+            color: #64748b;
+
+            font-size: 10px;
+        }
+
+        .action-button:hover {
+            background: #f8fafc;
+
+            color: var(--blue);
+
+            border-color:
+                #bfdbfe;
+        }
+
+        .action-button.danger:hover {
+            color: var(--red);
+
+            border-color:
+                #fecaca;
+
+            background:
+                #fef2f2;
+        }
+
+        /* =========================================================
+           EMPTY STATE
+        ========================================================= */
+
+        .empty-state {
+            display: none;
+
+            padding: 55px 20px;
+
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 50px;
+            height: 50px;
+
+            display: grid;
+            place-items: center;
+
+            margin:
+                0 auto 12px;
+
+            background: #f1f5f9;
+
+            color: #94a3b8;
+
+            border-radius: 50%;
+
+            font-size: 18px;
+        }
+
+        .empty-state h3 {
+            color: var(--navy);
+
+            font-size: 12px;
+        }
+
+        .empty-state p {
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+        /* =========================================================
+           PAGINATION
+        ========================================================= */
+
+        .table-footer {
+            padding:
+                12px 15px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            border-top:
+                1px solid var(--border);
+
+            background: #fafcff;
+        }
+
+        .showing {
+            color: var(--muted);
+
+            font-size: 8px;
+        }
+
+        .pagination {
+            display: flex;
+
+            gap: 4px;
+        }
+
+        .page-button {
+            min-width: 26px;
+            height: 26px;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 5px;
+
+            background: white;
+
+            color: #64748b;
+
+            font-size: 8px;
+        }
+
+        .page-button.active {
+            background: var(--blue);
+
+            border-color:
+                var(--blue);
+
+            color: white;
+        }
+
+        /* =========================================================
+           MODAL
+        ========================================================= */
+
+        .modal-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(15,23,42,.48);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            z-index: 200;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+
+            max-width: 650px;
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            background: white;
+
+            border-radius: 13px;
+
+            box-shadow:
+                0 30px 80px
+                rgba(15,23,42,.25);
+        }
+
+        .modal-header {
+            padding:
+                17px 19px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        .modal-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+        }
+
+        .modal-title h2 {
+            font-size: 14px;
+
+            color: var(--navy);
+        }
+
+        .modal-title span {
+            font-size: 8px;
+
+            color: var(--muted);
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+
+            border:
+                1px solid var(--border);
+
+            background: white;
+
+            border-radius: 6px;
+
+            color: #64748b;
+
+            font-size: 16px;
+        }
+
+        .modal-body {
+            padding: 19px;
+        }
+
+        .detail-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+        }
+
+        .detail-item {
+            padding: 11px;
+
+            background: #f8fafc;
+
+            border-radius: 7px;
+        }
+
+        .detail-item label {
+            display: block;
+
+            color: #94a3b8;
+
+            font-size: 7px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+
+            font-weight: 800;
+        }
+
+        .detail-item strong {
+            display: block;
+
+            margin-top: 4px;
+
+            color: var(--navy);
+
+            font-size: 9px;
+        }
+
+        .ai-box {
+            margin-top: 13px;
+
+            padding: 13px;
+
+            border:
+                1px solid #dbeafe;
+
+            background: #eff6ff;
+
+            border-radius: 8px;
+        }
+
+        .ai-header {
+            color: var(--blue);
+
+            font-size: 8px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+        }
+
+        .ai-box p {
+            margin-top: 6px;
+
+            color: #475569;
+
+            font-size: 9px;
+
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            margin-top: 16px;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 7px;
+        }
+
+        .modal-button {
+            height: 34px;
+
+            padding:
+                0 12px;
+
+            border-radius: 6px;
+
+            font-size: 8px;
+
+            font-weight: 800;
+        }
+
+        .modal-button.secondary {
+            border:
+                1px solid var(--border);
+
+            background: white;
+
+            color: #475569;
+        }
+
+        .modal-button.primary {
+            border:
+                1px solid var(--blue);
+
+            background: var(--blue);
+
+            color: white;
+        }
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        .toast {
+            position: fixed;
+
+            right: 22px;
+            bottom: 22px;
+
+            max-width: 320px;
+
+            padding:
+                11px 14px;
+
+            background: var(--navy);
+
+            color: white;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(15,23,42,.2);
+
+            font-size: 9px;
+
+            transform:
+                translateY(100px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: .25s;
+
+            z-index: 300;
+        }
+
+        .toast.show {
+            transform:
+                translateY(0);
+
+            opacity: 1;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 850px) {
+
+            .sidebar {
+                width: 72px;
+            }
+
+            .main {
+                width: calc(100% - 72px);
+
+                margin-left: 72px;
+            }
+
+            .brand {
+                justify-content: center;
+
+                padding: 0;
+            }
+
+            .brand-text,
+            .nav-label,
+            .nav-item span:not(.nav-icon),
+            .operator-info {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            .sidebar-footer {
+                display: flex;
+
+                justify-content: center;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                width: 100%;
+
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding:
+                    0 14px;
+            }
+
+            .mobile-menu {
+                display: grid;
+
+                place-items: center;
+            }
+
+            .live-status {
+                display: none;
+            }
+
+            .content {
+                padding:
+                    15px 13px 30px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+
+                gap: 9px;
+            }
+
+            .summary-card {
+                padding: 12px;
+            }
+
+            .summary-value {
+                font-size: 20px;
+            }
+
+            .toolbar {
+                align-items: stretch;
+            }
+
+            .search-wrapper {
+                min-width: 100%;
+            }
+
+            .filter-select {
+                flex: 1;
+            }
+
+            .sort-button {
+                flex: 1;
+            }
+
+            .report-button {
+                width: 100%;
+
+                justify-content: center;
+            }
+
+            .table-footer {
+                flex-direction: column;
+
+                gap: 10px;
+            }
+
+        }
+
+        @media (max-width: 430px) {
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title p {
+                display: none;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================= -->
+
+    <aside class="sidebar">
+
+        <a href="index.html" class="brand">
+
+            <div class="brand-icon">
+                +
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    AI Emergency Command
+                </strong>
+
+                <span>
+                    Emergency Response Platform
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <nav class="nav">
+
+            <div class="nav-label">
+                Operations
+            </div>
+
+            <a
+                href="dashboard.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    ▦
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <a
+                href="map.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    ⌖
+                </span>
+
+                <span>
+                    Live Map
+                </span>
+
+                <span class="nav-badge">
+                    6
+                </span>
+
+            </a>
+
+
+            <a
+                href="incidents.html"
+                class="nav-item active">
+
+                <span class="nav-icon">
+                    !
+                </span>
+
+                <span>
+                    Incidents
+                </span>
+
+                <span class="nav-badge">
+                    12
+                </span>
+
+            </a>
+
+
+            <a
+                href="report.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    +
+                </span>
+
+                <span>
+                    Report Emergency
+                </span>
+
+            </a>
+
+
+            <br>
+
+
+            <div class="nav-label">
+                Management
+            </div>
+
+
+            <a
+                href="teams.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    ♙
+                </span>
+
+                <span>
+                    Response Teams
+                </span>
+
+            </a>
+
+
+            <a
+                href="analytics.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    ▥
+                </span>
+
+                <span>
+                    Analytics
+                </span>
+
+            </a>
+
+
+            <a
+                href="admin.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    ⚙
+                </span>
+
+                <span>
+                    Administration
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="operator">
+
+                <div class="avatar">
+                    OP
+                </div>
+
+                <div class="operator-info">
+
+                    <strong>
+                        Operations User
+                    </strong>
+
+                    <span>
+                        Dispatcher
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================= -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="mobile-menu"
+                    onclick="showToast('Mobile navigation opened')">
+
+                    ☰
+
+                </button>
+
+
+                <div class="page-title">
+
+                    <h1>
+                        Incident Management
+                    </h1>
+
+                    <p>
+                        Monitor, prioritize, and manage emergency incidents
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="top-actions">
+
+                <div class="live-status">
+
+                    <span class="live-dot"></span>
+
+                    LIVE SYSTEM
+
+                </div>
+
+
+                <button
+                    class="icon-button"
+                    title="Notifications">
+
+                    ♢
+
+                </button>
+
+
+                <button
+                    class="icon-button"
+                    title="Settings">
+
+                    ⚙
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             CONTENT
+        ===================================================== -->
+
+        <div class="content">
+
+
+            <!-- SUMMARY -->
+
+            <section class="summary-grid">
+
+
+                <div class="summary-card total">
+
+                    <div class="summary-top">
+
+                        <span class="summary-label">
+                            Total Incidents
+                        </span>
+
+                        <div class="summary-icon">
+                            ▦
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="totalCount">
+
+                        24
+
+                    </div>
+
+                    <div class="summary-change">
+
+                        <strong>
+                            +8.2%
+                        </strong>
+
+                        compared with yesterday
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card critical">
+
+                    <div class="summary-top">
+
+                        <span class="summary-label">
+                            Critical
+                        </span>
+
+                        <div class="summary-icon">
+                            !
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="criticalCount">
+
+                        4
+
+                    </div>
+
+                    <div class="summary-change">
+
+                        Requires immediate attention
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card active">
+
+                    <div class="summary-top">
+
+                        <span class="summary-label">
+                            Active
+                        </span>
+
+                        <div class="summary-icon">
+                            ◉
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="activeCount">
+
+                        12
+
+                    </div>
+
+                    <div class="summary-change">
+
+                        Response teams deployed
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card resolved">
+
+                    <div class="summary-top">
+
+                        <span class="summary-label">
+                            Resolved Today
+                        </span>
+
+                        <div class="summary-icon">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="summary-value">
+
+                        8
+
+                    </div>
+
+                    <div class="summary-change">
+
+                        <strong>
+                            92%
+                        </strong>
+
+                        within response target
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 TOOLBAR
+            ================================================= -->
+
+            <section class="toolbar">
+
+
+                <div class="search-wrapper">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="text"
+                        class="search-input"
+                        id="searchInput"
+                        placeholder="Search incident ID, type, location, or assigned unit..."
+                        oninput="filterIncidents()">
+
+                </div>
+
+
+                <select
+                    class="filter-select"
+                    id="priorityFilter"
+                    onchange="filterIncidents()">
+
+                    <option value="all">
+                        All Priorities
+                    </option>
+
+                    <option value="critical">
+                        Critical
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                    <option value="medium">
+                        Medium
+                    </option>
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                </select>
+
+
+                <select
+                    class="filter-select"
+                    id="statusFilter"
+                    onchange="filterIncidents()">
+
+                    <option value="all">
+                        All Statuses
+                    </option>
+
+                    <option value="active">
+                        Active
+                    </option>
+
+                    <option value="dispatched">
+                        Dispatched
+                    </option>
+
+                    <option value="investigating">
+                        Investigating
+                    </option>
+
+                    <option value="resolved">
+                        Resolved
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                </select>
+
+
+                <select
+                    class="filter-select"
+                    id="typeFilter"
+                    onchange="filterIncidents()">
+
+                    <option value="all">
+                        All Types
+                    </option>
+
+                    <option value="Fire">
+                        Fire
+                    </option>
+
+                    <option value="Medical">
+                        Medical
+                    </option>
+
+                    <option value="Accident">
+                        Accident
+                    </option>
+
+                    <option value="Crime">
+                        Crime
+                    </option>
+
+                    <option value="Structural">
+                        Structural
+                    </option>
+
+                </select>
+
+
+                <button
+                    class="sort-button"
+                    onclick="sortIncidents()">
+
+                    ↕ Sort by Time
+
+                </button>
+
+
+                <a
+                    href="report.html"
+                    class="report-button">
+
+                    <span>
+                        +
+                    </span>
+
+                    Report Emergency
+
+                </a>
+
+            </section>
+
+
+            <!-- =================================================
+                 INCIDENT TABLE
+            ================================================= -->
+
+            <section class="table-container">
+
+
+                <div class="table-header">
+
+                    <div>
+
+                        <h2>
+                            All Incidents
+                        </h2>
+
+                        <p>
+                            Real-time incident records
+                        </p>
+
+                    </div>
+
+
+                    <p id="resultCount">
+                        Showing 12 incidents
+                    </p>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Incident
+                                </th>
+
+                                <th>
+                                    Location
+                                </th>
+
+                                <th>
+                                    Priority
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Assigned Unit
+                                </th>
+
+                                <th>
+                                    Reported
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="incidentTable">
+
+
+                            <!-- ROW 1 -->
+
+                            <tr
+                                data-priority="critical"
+                                data-status="active"
+                                data-type="Fire"
+                                data-search="INC-1042 building fire north district fire unit 04">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1042
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Building Fire
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Fire
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        North District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority critical">
+
+                                        <span class="priority-dot"></span>
+
+                                        Critical
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status active">
+                                        Active
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            F04
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Fire Unit 04
+                                            </strong>
+
+                                            <span>
+                                                2 responders
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        2 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1042')"
+                                            title="View">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1042')"
+                                            title="Escalate">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 2 -->
+
+                            <tr
+                                data-priority="high"
+                                data-status="dispatched"
+                                data-type="Accident"
+                                data-search="INC-1041 traffic collision east district ambulance">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1041
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Traffic Collision
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Accident
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        East District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority high">
+
+                                        <span class="priority-dot"></span>
+
+                                        High
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status dispatched">
+                                        Dispatched
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            A07
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Ambulance 07
+                                            </strong>
+
+                                            <span>
+                                                En route
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        5 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1041')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1041')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 3 -->
+
+                            <tr
+                                data-priority="medium"
+                                data-status="active"
+                                data-type="Medical"
+                                data-search="INC-1040 medical emergency east district medical unit">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1040
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Medical Emergency
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Medical
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        East District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority medium">
+
+                                        <span class="priority-dot"></span>
+
+                                        Medium
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status active">
+                                        Active
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            M12
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Medical Unit 12
+                                            </strong>
+
+                                            <span>
+                                                Assigned
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        8 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1040')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1040')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 4 -->
+
+                            <tr
+                                data-priority="critical"
+                                data-status="investigating"
+                                data-type="Structural"
+                                data-search="INC-1039 structural damage west district rescue unit">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1039
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Structural Damage
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Structural
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        West District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority critical">
+
+                                        <span class="priority-dot"></span>
+
+                                        Critical
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status investigating">
+                                        Investigating
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            R02
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Rescue Unit 02
+                                            </strong>
+
+                                            <span>
+                                                On site
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        11 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1039')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1039')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 5 -->
+
+                            <tr
+                                data-priority="high"
+                                data-status="dispatched"
+                                data-type="Accident"
+                                data-search="INC-1038 road accident west district police">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1038
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Road Accident
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Accident
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        West District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority high">
+
+                                        <span class="priority-dot"></span>
+
+                                        High
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status dispatched">
+                                        Dispatched
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            P16
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Police Unit 16
+                                            </strong>
+
+                                            <span>
+                                                En route
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        14 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1038')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1038')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 6 -->
+
+                            <tr
+                                data-priority="low"
+                                data-status="resolved"
+                                data-type="Medical"
+                                data-search="INC-1037 minor medical south district medical unit">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1037
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Minor Medical
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Medical
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        South District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority low">
+
+                                        <span class="priority-dot"></span>
+
+                                        Low
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status resolved">
+                                        Resolved
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            M08
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Medical Unit 08
+                                            </strong>
+
+                                            <span>
+                                                Completed
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        19 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1037')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="deleteIncident('INC-1037')">
+
+                                            ×
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 7 -->
+
+                            <tr
+                                data-priority="high"
+                                data-status="active"
+                                data-type="Crime"
+                                data-search="INC-1036 security threat central district police">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1036
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Security Threat
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Crime
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        Central District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority high">
+
+                                        <span class="priority-dot"></span>
+
+                                        High
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status active">
+                                        Active
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            P09
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Police Unit 09
+                                            </strong>
+
+                                            <span>
+                                                On site
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        23 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1036')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1036')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 8 -->
+
+                            <tr
+                                data-priority="medium"
+                                data-status="pending"
+                                data-type="Fire"
+                                data-search="INC-1035 smoke alarm north district fire">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1035
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Smoke Alarm
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Fire
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        North District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority medium">
+
+                                        <span class="priority-dot"></span>
+
+                                        Medium
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            F11
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Fire Unit 11
+                                            </strong>
+
+                                            <span>
+                                                Available
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        28 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1035')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1035')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 9 -->
+
+                            <tr
+                                data-priority="low"
+                                data-status="resolved"
+                                data-type="Accident"
+                                data-search="INC-1034 minor vehicle collision south district">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1034
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Minor Vehicle Collision
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Accident
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        South District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority low">
+
+                                        <span class="priority-dot"></span>
+
+                                        Low
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status resolved">
+                                        Resolved
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            P14
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Police Unit 14
+                                            </strong>
+
+                                            <span>
+                                                Completed
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        34 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1034')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="deleteIncident('INC-1034')">
+
+                                            ×
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 10 -->
+
+                            <tr
+                                data-priority="critical"
+                                data-status="active"
+                                data-type="Medical"
+                                data-search="INC-1033 critical medical emergency central district ambulance">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1033
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Critical Medical Emergency
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Medical
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        Central District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority critical">
+
+                                        <span class="priority-dot"></span>
+
+                                        Critical
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status active">
+                                        Active
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            A03
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Ambulance 03
+                                            </strong>
+
+                                            <span>
+                                                On scene
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        41 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1033')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1033')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 11 -->
+
+                            <tr
+                                data-priority="medium"
+                                data-status="investigating"
+                                data-type="Structural"
+                                data-search="INC-1032 building damage east district rescue">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1032
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Building Damage
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Structural
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        East District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority medium">
+
+                                        <span class="priority-dot"></span>
+
+                                        Medium
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status investigating">
+                                        Investigating
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            R06
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Rescue Unit 06
+                                            </strong>
+
+                                            <span>
+                                                Inspecting
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        48 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1032')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1032')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ROW 12 -->
+
+                            <tr
+                                data-priority="high"
+                                data-status="dispatched"
+                                data-type="Crime"
+                                data-search="INC-1031 public safety incident west district police">
+
+                                <td>
+
+                                    <span class="incident-id">
+                                        INC-1031
+                                    </span>
+
+                                    <div class="incident-name">
+                                        Public Safety Incident
+                                    </div>
+
+                                    <div class="incident-type">
+                                        Crime
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="location-cell">
+
+                                        <span class="location-icon">
+                                            ⌖
+                                        </span>
+
+                                        West District
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="priority high">
+
+                                        <span class="priority-dot"></span>
+
+                                        High
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status dispatched">
+                                        Dispatched
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="unit">
+
+                                        <div class="unit-avatar">
+                                            P22
+                                        </div>
+
+                                        <div class="unit-text">
+
+                                            <strong>
+                                                Police Unit 22
+                                            </strong>
+
+                                            <span>
+                                                En route
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="time-cell">
+                                        56 min ago
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            class="action-button"
+                                            onclick="viewIncident('INC-1031')">
+
+                                            ◉
+
+                                        </button>
+
+                                        <button
+                                            class="action-button danger"
+                                            onclick="escalateIncident('INC-1031')">
+
+                                            ↑
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                        </tbody>
+
+                    </table>
+
+
+                    <!-- EMPTY -->
+
+                    <div
+                        class="empty-state"
+                        id="emptyState">
+
+                        <div class="empty-icon">
+                            ⌕
+                        </div>
+
+                        <h3>
+                            No incidents found
+                        </h3>
+
+                        <p>
+                            Try changing your search or filters.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TABLE FOOTER -->
+
+                <div class="table-footer">
+
+                    <div
+                        class="showing"
+                        id="showingText">
+
+                        Showing 12 of 24 incidents
+
+                    </div>
+
+
+                    <div class="pagination">
+
+                        <button
+                            class="page-button">
+
+                            ‹
+
+                        </button>
+
+                        <button
+                            class="page-button active">
+
+                            1
+
+                        </button>
+
+                        <button
+                            class="page-button">
+
+                            2
+
+                        </button>
+
+                        <button
+                            class="page-button">
+
+                            3
+
+                        </button>
+
+                        <button
+                            class="page-button">
+
+                            ›
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     INCIDENT MODAL
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="incidentModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+
+                <h2 id="modalIncidentTitle">
+                    Incident Details
+                </h2>
+
+                <span id="modalIncidentId">
+                    —
+                </span>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                onclick="closeModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+
+            <div class="detail-grid">
+
+
+                <div class="detail-item">
+
+                    <label>
+                        Incident Type
+                    </label>
+
+                    <strong id="modalType">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <label>
+                        Priority
+                    </label>
+
+                    <strong id="modalPriority">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <label>
+                        Location
+                    </label>
+
+                    <strong id="modalLocation">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <label>
+                        Assigned Unit
+                    </label>
+
+                    <strong id="modalUnit">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <strong id="modalStatus">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <label>
+                        Reported
+                    </label>
+
+                    <strong id="modalTime">
+                        —
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="ai-box">
+
+                <div class="ai-header">
+
+                    ✦ AI Generated Incident Summary
+
+                </div>
+
+                <p id="modalSummary">
+
+                    AI-generated incident analysis will appear here.
+
+                </p>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    class="modal-button secondary"
+                    onclick="openMap()">
+
+                    View on Map
+
+                </button>
+
+                <button
+                    class="modal-button primary"
+                    onclick="showToast('Incident status updated successfully')">
+
+                    Update Incident
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    class="toast"
+    id="toast">
+
+    Action completed successfully.
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       INCIDENT DATA
+    ========================================================= */
+
+    const incidentData = {
+
+        "INC-1042": {
+            title: "Building Fire",
+            type: "Fire",
+            priority: "Critical",
+            location: "North District",
+            unit: "Fire Unit 04",
+            status: "Active",
+            time: "2 min ago",
+            summary:
+                "AI analysis indicates an active building fire with potential structural and public safety risks. Fire response has been dispatched and the incident requires continuous monitoring."
+        },
+
+        "INC-1041": {
+            title: "Traffic Collision",
+            type: "Accident",
+            priority: "High",
+            location: "East District",
+            unit: "Ambulance 07",
+            status: "Dispatched",
+            time: "5 min ago",
+            summary:
+                "A traffic collision has been reported in the East District. Emergency medical resources are currently responding while traffic conditions are being monitored."
+        },
+
+        "INC-1040": {
+            title: "Medical Emergency",
+            type: "Medical",
+            priority: "Medium",
+            location: "East District",
+            unit: "Medical Unit 12",
+            status: "Active",
+            time: "8 min ago",
+            summary:
+                "A medical emergency has been reported. A nearby medical response unit has been assigned to assess the situation and provide assistance."
+        },
+
+        "INC-1039": {
+            title: "Structural Damage",
+            type: "Structural",
+            priority: "Critical",
+            location: "West District",
+            unit: "Rescue Unit 02",
+            status: "Investigating",
+            time: "11 min ago",
+            summary:
+                "Structural damage has been reported. Rescue personnel are assessing the location for potential secondary safety risks."
+        },
+
+        "INC-1038": {
+            title: "Road Accident",
+            type: "Accident",
+            priority: "High",
+            location: "West District",
+            unit: "Police Unit 16",
+            status: "Dispatched",
+            time: "14 min ago",
+            summary:
+                "A road accident is causing a potential traffic disruption. Police and emergency response resources have been dispatched."
+        },
+
+        "INC-1037": {
+            title: "Minor Medical",
+            type: "Medical",
+            priority: "Low",
+            location: "South District",
+            unit: "Medical Unit 08",
+            status: "Resolved",
+            time: "19 min ago",
+            summary:
+                "The reported minor medical incident has been assessed and resolved by the assigned medical response team."
+        },
+
+        "INC-1036": {
+            title: "Security Threat",
+            type: "Crime",
+            priority: "High",
+            location: "Central District",
+            unit: "Police Unit 09",
+            status: "Active",
+            time: "23 min ago",
+            summary:
+                "A public safety concern has been reported. Police resources are on location and continuing assessment."
+        },
+
+        "INC-1035": {
+            title: "Smoke Alarm",
+            type: "Fire",
+            priority: "Medium",
+            location: "North District",
+            unit: "Fire Unit 11",
+            status: "Pending",
+            time: "28 min ago",
+            summary:
+                "An automated smoke alarm report has been received. Fire response resources are being evaluated for dispatch."
+        },
+
+        "INC-1034": {
+            title: "Minor Vehicle Collision",
+            type: "Accident",
+            priority: "Low",
+            location: "South District",
+            unit: "Police Unit 14",
+            status: "Resolved",
+            time: "34 min ago",
+            summary:
+                "A minor vehicle collision was reported and the assigned police unit has completed the response."
+        },
+
+        "INC-1033": {
+            title: "Critical Medical Emergency",
+            type: "Medical",
+            priority: "Critical",
+            location: "Central District",
+            unit: "Ambulance 03",
+            status: "Active",
+            time: "41 min ago",
+            summary:
+                "A critical medical emergency has been reported. An ambulance is currently on scene and emergency medical assessment is underway."
+        },
+
+        "INC-1032": {
+            title: "Building Damage",
+            type: "Structural",
+            priority: "Medium",
+            location: "East District",
+            unit: "Rescue Unit 06",
+            status: "Investigating",
+            time: "48 min ago",
+            summary:
+                "Building damage is being investigated by a rescue team to determine the level of structural risk."
+        },
+
+        "INC-1031": {
+            title: "Public Safety Incident",
+            type: "Crime",
+            priority: "High",
+            location: "West District",
+            unit: "Police Unit 22",
+            status: "Dispatched",
+            time: "56 min ago",
+            summary:
+                "A public safety incident has been reported. Police resources have been dispatched and are currently responding."
+        }
+
+    };
+
+
+    /* =========================================================
+       FILTER INCIDENTS
+    ========================================================= */
+
+    function filterIncidents() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .toLowerCase()
+                .trim();
+
+        const priority =
+            document
+                .getElementById("priorityFilter")
+                .value;
+
+        const status =
+            document
+                .getElementById("statusFilter")
+                .value;
+
+        const type =
+            document
+                .getElementById("typeFilter")
+                .value;
+
+
+        const rows =
+            document
+                .querySelectorAll("#incidentTable tr");
+
+
+        let visibleCount = 0;
+
+
+        rows.forEach(row => {
+
+            const rowSearch =
+                row.dataset.search || "";
+
+            const rowPriority =
+                row.dataset.priority || "";
+
+            const rowStatus =
+                row.dataset.status || "";
+
+            const rowType =
+                row.dataset.type || "";
+
+
+            const matchesSearch =
+                rowSearch.includes(search);
+
+            const matchesPriority =
+                priority === "all" ||
+                rowPriority === priority;
+
+            const matchesStatus =
+                status === "all" ||
+                rowStatus === status;
+
+            const matchesType =
+                type === "all" ||
+                rowType === type;
+
+
+            const visible =
+                matchesSearch &&
+                matchesPriority &&
+                matchesStatus &&
+                matchesType;
+
+
+            row.style.display =
+                visible
+                    ? ""
+                    : "none";
+
+
+            if (visible) {
+                visibleCount++;
+            }
+
+        });
+
+
+        document
+            .getElementById("resultCount")
+            .textContent =
+                `Showing ${visibleCount} incidents`;
+
+
+        document
+            .getElementById("showingText")
+            .textContent =
+                `Showing ${visibleCount} of 24 incidents`;
+
+
+        document
+            .getElementById("emptyState")
+            .style.display =
+                visibleCount === 0
+                    ? "block"
+                    : "none";
+
+    }
+
+
+    /* =========================================================
+       SORT
+    ========================================================= */
+
+    let sortAscending = false;
+
+
+    function sortIncidents() {
+
+        const table =
+            document.getElementById("incidentTable");
+
+        const rows =
+            Array.from(table.querySelectorAll("tr"));
+
+
+        rows.reverse();
+
+
+        rows.forEach(row => {
+            table.appendChild(row);
+        });
+
+
+        sortAscending =
+            !sortAscending;
+
+
+        showToast(
+            sortAscending
+                ? "Incidents sorted oldest first"
+                : "Incidents sorted newest first"
+        );
+
+    }
+
+
+    /* =========================================================
+       VIEW INCIDENT
+    ========================================================= */
+
+    function viewIncident(id) {
+
+        const data =
+            incidentData[id];
+
+
+        if (!data) {
+            showToast("Incident information unavailable");
+            return;
+        }
+
+
+        document
+            .getElementById("modalIncidentTitle")
+            .textContent =
+                data.title;
+
+
+        document
+            .getElementById("modalIncidentId")
+            .textContent =
+                data.id || id;
+
+
+        document
+            .getElementById("modalType")
+            .textContent =
+                data.type;
+
+
+        document
+            .getElementById("modalPriority")
+            .textContent =
+                data.priority;
+
+
+        document
+            .getElementById("modalLocation")
+            .textContent =
+                data.location;
+
+
+        document
+            .getElementById("modalUnit")
+            .textContent =
+                data.unit;
+
+
+        document
+            .getElementById("modalStatus")
+            .textContent =
+                data.status;
+
+
+        document
+            .getElementById("modalTime")
+            .textContent =
+                data.time;
+
+
+        document
+            .getElementById("modalSummary")
+            .textContent =
+                data.summary;
+
+
+        document
+            .getElementById("incidentModal")
+            .classList.add("show");
+
+    }
+
+
+    /* =========================================================
+       CLOSE MODAL
+    ========================================================= */
+
+    function closeModal() {
+
+        document
+            .getElementById("incidentModal")
+            .classList.remove("show");
+
+    }
+
+
+    document
+        .getElementById("incidentModal")
+        .addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target === this
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+    /* =========================================================
+       ESCALATE
+    ========================================================= */
+
+    function escalateIncident(id) {
+
+        const confirmed =
+            confirm(
+                `Escalate incident ${id} to a higher response priority?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        showToast(
+            `${id} has been escalated to the command center.`
+        );
+
+    }
+
+
+    /* =========================================================
+       DELETE
+    ========================================================= */
+
+    function deleteIncident(id) {
+
+        const confirmed =
+            confirm(
+                `Remove ${id} from the active incident view?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        const rows =
+            document.querySelectorAll(
+                "#incidentTable tr"
+            );
+
+
+        rows.forEach(row => {
+
+            if (
+                row
+                    .querySelector(".incident-id")
+                    ?.textContent
+                    .trim() === id
+            ) {
+
+                row.remove();
+
+            }
+
+        });
+
+
+        filterIncidents();
+
+
+        showToast(
+            `${id} removed from the incident list.`
+        );
+
+    }
+
+
+    /* =========================================================
+       MAP
+    ========================================================= */
+
+    function openMap() {
+
+        window.location.href =
+            "map.html";
+
+    }
+
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    let toastTimer;
+
+
+    function showToast(message) {
+
+        const toast =
+            document.getElementById("toast");
+
+
+        toast.textContent =
+            message;
+
+
+        toast.classList.add("show");
+
+
+        clearTimeout(toastTimer);
+
+
+        toastTimer =
+            setTimeout(() => {
+
+                toast.classList.remove("show");
+
+            }, 3000);
+
+    }
+
+
+    /* =========================================================
+       KEYBOARD SHORTCUT
+    ========================================================= */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       SIMULATED LIVE INCIDENT UPDATE
+    ========================================================= */
+
+    setInterval(() => {
+
+        const liveDot =
+            document.querySelector(".live-dot");
+
+
+        if (liveDot) {
+
+            liveDot.style.opacity = ".2";
+
+
+            setTimeout(() => {
+
+                liveDot.style.opacity = "1";
+
+            }, 250);
+
+        }
+
+    }, 4000);
+
+</script>
+
+</body>
+</html>
+```
